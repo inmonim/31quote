@@ -1,17 +1,14 @@
 from fastapi import FastAPI
 
+from controller import quote
+
 app = FastAPI()
 
+app.include_router(quote.router, prefix='/api/v1/quote', tags=['quote'])
 
 @app.get('/')
 async def home():
     return {'hello' : 'world'}
-
-@app.get('/test')
-async def test():
-    
-    return
-
 
 if __name__ == '__main__':
 
