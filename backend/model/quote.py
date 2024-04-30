@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import mapped_column, Mapped
 
-Base = declarative_base()
+from database import Base
+
 
 class Quote(Base):
     __tablename__ = 'quote_meta'

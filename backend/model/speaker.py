@@ -1,8 +1,7 @@
-from sqlalchemy import Integer, String
-from sqlalchemy.orm import declarative_base
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import mapped_column, Mapped
 
-Base = declarative_base()
+from database import Base
 
 class Speaker(Base):
     
