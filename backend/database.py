@@ -2,9 +2,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 
-from dotenv import dotenv_values
-
-ENV = dotenv_values('./.env')
+from env import ENV
 
 HOST = ENV['HOST']
 USER = ENV['USER']
