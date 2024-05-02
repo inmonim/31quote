@@ -1,19 +1,20 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from database import get_db
-from DTO.user import CreateUserData
+from DTO.user import CreateUserDataDTO
 
 from view.user_manage import create_user
 
 router = APIRouter()
 
 @router.post('/create_user')
-async def create_user_controller(user_data : CreateUserData, db : Session = Depends(get_db)):
+async def create_user_controller(user_data : CreateUserDataDTO, db : Session = Depends(get_db)):
     
-    try:
-        user_id = create_user(user_data, db)
-    except Exception as e:
-        raise HTTPException(400, detail=e)
+    user_id = create_user(user_data, db)
     
-    return {'make_user' : user_id}
+    result = {'user_id' : user_id}
+
+    return JSONResponse(result,
+                            201)
