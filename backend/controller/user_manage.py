@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from database import get_db
 from DTO.user import CreateUserDataDTO, LoginDataDTO
+from DTO.auth import Token
 
 from view.user_manage import (create_user, login_user,
                             #   google_login, get_google_login_url
@@ -24,11 +25,15 @@ def create_user_controller(user_data : CreateUserDataDTO, db : Session = Depends
                             201)
 
 @router.post('/login')
-def login_controller(login_data : LoginDataDTO, db : Session = Depends(get_db)):
+def login_controller(login_data : OAuth2PasswordRequestForm = Depends(), db : Session = Depends(get_db)):
     
-    user_id = login_user(login_data, db)
+    result_data = login_user(login_data, db)
+    user_id = result_data['user_id']
+    token : Token = result_data['token']
     
     result = {'user_id' : user_id,
+            #   'access_token' : token.access_token,
+            #   'token_type' : token.token_type,
               'detail' : '로그인 성공'}
     
     return JSONResponse(result,

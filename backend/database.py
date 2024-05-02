@@ -14,13 +14,13 @@ DB_URL = f'mysql+pymysql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}'
 
 engine = create_engine(url=DB_URL)
 
-Session = sessionmaker(bind=engine)
+SessionMaker = sessionmaker(bind=engine)
 
 class Base(DeclarativeBase):
     pass
 
 async def get_db():
-    db = Session()
+    db = SessionMaker()
     try:
         yield db
     finally:
