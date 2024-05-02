@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 from fastapi.middleware.cors import CORSMiddleware
 
-from controller import quote
+from controller import quote, user_manage
 
 app = FastAPI()
 
@@ -14,12 +14,12 @@ app.add_middleware(
     allow_headers=['*']
     )
 
-
 app.include_router(quote.router, prefix='/api/v1/quote', tags=['quote'])
+app.include_router(user_manage.router, prefix='/api/v1/user', tags=['user'])
 
 @app.get('/')
 async def home():
-    return {'hello' : 'world'}
+    return {'hello' : '31quote'}
 
 if __name__ == '__main__':
 
