@@ -10,7 +10,7 @@ from view.user_manage import create_user, login_user
 router = APIRouter()
 
 @router.post('/create_user')
-async def create_user_controller(user_data : CreateUserDataDTO, db : Session = Depends(get_db)):
+def create_user_controller(user_data : CreateUserDataDTO, db : Session = Depends(get_db)):
     
     user_id = create_user(user_data, db)
     
@@ -21,7 +21,7 @@ async def create_user_controller(user_data : CreateUserDataDTO, db : Session = D
                             201)
 
 @router.post('/login')
-async def login_controller(login_data : LoginDataDTO, db : Session = Depends(get_db)):
+def login_controller(login_data : LoginDataDTO, db : Session = Depends(get_db)):
     
     user_id = login_user(login_data, db)
     
@@ -29,4 +29,4 @@ async def login_controller(login_data : LoginDataDTO, db : Session = Depends(get
               'detail' : '로그인 성공'}
     
     return JSONResponse(result,
-                        200) 
+                        200)

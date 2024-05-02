@@ -1,19 +1,23 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-import bcrypt
+from passlib.context import CryptContext
 
 from DTO.user import CreateUserDataDTO, LoginDataDTO
 from model.user import User
 
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated = 'auto')
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
+
+def verify_password(plain_pw, hashed_pw):
+    return pwd_context.verify(plain_pw, hashed_pw)
 
 def create_user(user_data : CreateUserDataDTO, db : Session):
     
     nickname = user_data.nickname
     login_id = user_data.login_id
     password = user_data.password
-    
-    salt = bcrypt.gensalt()
-    hashed_pw = bcrypt.hashpw(password.encode('utf-8'), salt)
 
     if db.query(User).filter(User.nickname == nickname).count():
         raise HTTPException(409, '중복된 닉네임')
@@ -24,7 +28,7 @@ def create_user(user_data : CreateUserDataDTO, db : Session):
     new_user = User(
         nickname = nickname,
         login_id = login_id,
-        password = hashed_pw
+        password = get_password_hash(password)
     )
     
     db.add(new_user)
@@ -44,7 +48,7 @@ def login_user(login_user_data : LoginDataDTO, db: Session):
     
     hashed_pw = user.password
     
-    if bcrypt.checkpw(plain_pw.encode('utf-8'), hashed_pw.encode('utf-8')) == False:
+    if verify_password(plain_pw, hashed_pw) == False:
         raise HTTPException(401, '비밀번호 불일치')
     
     return user.user_id
