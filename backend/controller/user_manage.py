@@ -32,8 +32,8 @@ def login_controller(login_data : OAuth2PasswordRequestForm = Depends(), db : Se
     token : Token = result_data['token']
     
     result = {'user_id' : user_id,
-            #   'access_token' : token.access_token,
-            #   'token_type' : token.token_type,
+              'access_token' : token.access_token,
+              'token_type' : token.token_type,
               'detail' : '로그인 성공'}
     
     return JSONResponse(result,

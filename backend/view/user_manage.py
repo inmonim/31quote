@@ -7,7 +7,7 @@ from passlib.context import CryptContext
 
 from DTO.user import CreateUserDataDTO
 from DTO.auth import TokenData, Token
-from model.user import User
+from model.user import User, Profile
 from auth.auth import create_access_token
 
 from env import ENV
@@ -32,10 +32,10 @@ def create_user(user_data : CreateUserDataDTO, db : Session):
     login_id = user_data.login_id
     password = user_data.password
 
-    if db.query(User).filter(User.nickname == nickname).exists():
+    if db.query(User).filter(User.nickname == nickname).count():
         raise HTTPException(409, '중복된 닉네임')
 
-    elif db.query(User).filter(User.login_id == login_id).exists():
+    elif db.query(User).filter(User.login_id == login_id).count():
         raise HTTPException(409, '중복된 아이디')
     
     new_user = User(
@@ -43,8 +43,14 @@ def create_user(user_data : CreateUserDataDTO, db : Session):
         login_id = login_id,
         password = get_password_hash(password)
     )
-    
     db.add(new_user)
+    db.commit()
+    
+    new_profile = Profile(
+        profile_id = new_user.user_id,
+        nickname = nickname
+    )
+    db.add(new_profile)
     db.commit()
 
     return new_user.user_id
