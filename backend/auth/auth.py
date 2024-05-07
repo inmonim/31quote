@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from jose import jwt, JWTError
 
 from database import get_db
-from model.user import User
+from model.user import UserProfile
 from env import ENV
 
 ALGORITHM = ENV['ALGORITHM']
@@ -16,24 +16,22 @@ ACCESS_TOKEN_EXPIRE_MINUTES = int(ENV['ACCESS_TOKEN_EXPIRE_MINUTES'])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/user/login")
 
 
-def get_user_by_nickname(nickname : str, db : Session = Depends(get_db)) -> User:
-    user = db.query(User).filter(User.nickname == nickname).first()
+def get_user_by_nickname(nickname : str, db : Session = Depends(get_db)) -> UserProfile:
+    user = db.query(UserProfile).filter(UserProfile.nickname == nickname).first()
     if user:
         return user
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
+def create_access_token(data: dict, expires_delta: timedelta | None = None) -> int:
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     to_encode["exp"] = expire
-    print(to_encode)
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    print(encoded_jwt)
     return encoded_jwt
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+async def get_current_user(token: str = Depends(oauth2_scheme)) -> int:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",

@@ -5,8 +5,8 @@ from sqlalchemy.orm import mapped_column, Mapped
 
 from database import Base
 
-class User(Base):
-    __tablename__ = 'user'
+class UserProfile(Base):
+    __tablename__ = 'user_profile'
     
     user_id : Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     nickname : Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
@@ -16,8 +16,8 @@ class User(Base):
     update_at : Mapped[datetime]
     is_available : Mapped[int] = mapped_column(default=1)
 
-class Profile(Base):
-    __tablename__ = 'user_profile'
+class User(Base):
+    __tablename__ = 'user'
     
-    profile_id : Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    user_id : Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     nickname : Mapped[str] = mapped_column(String(20), unique=True, nullable=False)

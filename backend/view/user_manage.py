@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta
 
 from fastapi import HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
@@ -6,8 +6,8 @@ from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
 from DTO.user import CreateUserDataDTO
-from DTO.auth import TokenData, Token
-from model.user import User, Profile
+from DTO.auth import Token
+from model.user import User, UserProfile
 from auth.auth import create_access_token
 
 from env import ENV
@@ -32,13 +32,13 @@ def create_user(user_data : CreateUserDataDTO, db : Session):
     login_id = user_data.login_id
     password = user_data.password
 
-    if db.query(User).filter(User.nickname == nickname).count():
+    if db.query(UserProfile).filter(UserProfile.nickname == nickname).count():
         raise HTTPException(409, '중복된 닉네임')
 
-    elif db.query(User).filter(User.login_id == login_id).count():
+    elif db.query(UserProfile).filter(UserProfile.login_id == login_id).count():
         raise HTTPException(409, '중복된 아이디')
     
-    new_user = User(
+    new_user = UserProfile(
         nickname = nickname,
         login_id = login_id,
         password = get_password_hash(password)
@@ -46,8 +46,8 @@ def create_user(user_data : CreateUserDataDTO, db : Session):
     db.add(new_user)
     db.commit()
     
-    new_profile = Profile(
-        profile_id = new_user.user_id,
+    new_profile = User(
+        user_id = new_user.user_id,
         nickname = nickname
     )
     db.add(new_profile)
@@ -61,7 +61,7 @@ def login_user(login_user_data : OAuth2PasswordRequestForm , db: Session):
     login_id = login_user_data.username
     plain_pw = login_user_data.password
     
-    user = db.query(User).filter(User.login_id == login_id).first()
+    user = db.query(UserProfile).filter(UserProfile.login_id == login_id).first()
     
     hashed_pw = user.password
     

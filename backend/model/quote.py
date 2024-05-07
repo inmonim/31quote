@@ -24,4 +24,18 @@ class QuoteCategory(Base):
     __tablename__ = 'quote_category'
     
     category_id : Mapped[int] = mapped_column(primary_key=True)
-    quote_category : Mapped[str] = mapped_column(String(30))
+    category : Mapped[str] = mapped_column(String(30))
+
+class QuoteSubtext(Base):
+    __tablename__ = 'quote_subtext'
+    
+    subtext_id : Mapped[int] = mapped_column(primary_key=True)
+    subtext : Mapped[str] = mapped_column(nullable=False)
+
+class UserCheckedCategory(Base):
+    __tablename__ = 'user_checked_category'
+    
+    user_checked_category_id : Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    user_id : Mapped[int] = mapped_column(nullable=False)
+    category_id : Mapped[int] = mapped_column(nullable=False)
+
