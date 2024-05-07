@@ -2,11 +2,8 @@ from datetime import datetime, timezone, timedelta
 
 from fastapi import HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.orm import Session
 from jose import jwt, JWTError
 
-from database import get_db
-from model.user import UserProfile
 from env import ENV
 
 ALGORITHM = ENV['ALGORITHM']
@@ -14,12 +11,6 @@ SECRET_KEY = ENV['SECRET_KEY']
 ACCESS_TOKEN_EXPIRE_MINUTES = int(ENV['ACCESS_TOKEN_EXPIRE_MINUTES'])
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/user/login")
-
-
-def get_user_by_nickname(nickname : str, db : Session = Depends(get_db)) -> UserProfile:
-    user = db.query(UserProfile).filter(UserProfile.nickname == nickname).first()
-    if user:
-        return user
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None) -> int:
     to_encode = data.copy()

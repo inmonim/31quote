@@ -5,8 +5,9 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
-from DTO.user import CreateUserDataDTO
+from DTO.user import CreateUserDataDTO, UserDataDTO
 from DTO.auth import Token
+from repository.user_manage import UserRepository
 from model.user import User, UserProfile
 from auth.auth import create_access_token
 
@@ -23,63 +24,73 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated = 'auto')
 def get_password_hash(password):
     return pwd_context.hash(password)
 
+
 def verify_password(plain_pw, hashed_pw):
     return pwd_context.verify(plain_pw, hashed_pw)
 
-def create_user(user_data : CreateUserDataDTO, db : Session):
+
+def create_user(user_data : CreateUserDataDTO, db : Session) -> str:
+    
+    user_repo = UserRepository(db)
     
     nickname = user_data.nickname
     login_id = user_data.login_id
     password = user_data.password
 
-    if db.query(UserProfile).filter(UserProfile.nickname == nickname).count():
+    if user_repo.check_duplicated_nickname(nickname):
         raise HTTPException(409, '중복된 닉네임')
 
-    elif db.query(UserProfile).filter(UserProfile.login_id == login_id).count():
+    elif user_repo.check_duplicated_login_id(login_id):
         raise HTTPException(409, '중복된 아이디')
     
-    new_user = UserProfile(
+    new_profile_obj = UserProfile(
         nickname = nickname,
         login_id = login_id,
         password = get_password_hash(password)
     )
-    db.add(new_user)
-    db.commit()
     
-    new_profile = User(
-        user_id = new_user.user_id,
+    new_user_id = user_repo.create_profile(new_profile_obj)
+    
+    new_user_obj = User(
+        user_id = new_user_id,
         nickname = nickname
     )
-    db.add(new_profile)
-    db.commit()
+    
+    user_repo.create_user(new_user_obj)
 
-    return new_user.user_id
+    return nickname
 
 
-def login_user(login_user_data : OAuth2PasswordRequestForm , db: Session):
+def login_user(login_user_data : OAuth2PasswordRequestForm, db : Session) -> UserDataDTO:
+    
+    user_repo = UserRepository(db)
     
     login_id = login_user_data.username
     plain_pw = login_user_data.password
     
-    user = db.query(UserProfile).filter(UserProfile.login_id == login_id).first()
+    login_valied_data = user_repo.get_login_validation_value(login_id)
     
-    hashed_pw = user.password
+    user_id = login_valied_data.user_id
+    nickname = login_valied_data.nickname
+    hashed_pw = login_valied_data.hashed_pwd
     
-    if not user:
+    if not hashed_pw:
         raise HTTPException(401, '찾을 수 없는 아이디')
     
     if verify_password(plain_pw, hashed_pw) == False:
         raise HTTPException(401, '비밀번호 불일치')
     
-    user_id = user.user_id
-    
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": str(user_id)}, expires_delta=access_token_expires
     )
-    return {'user_id' : user_id,
-            'token' : Token(access_token=access_token, token_type="bearer")}
-
+    
+    login_result = UserDataDTO(user_id=user_id,
+                                nickname=nickname,
+                                access_token=access_token,
+                                token_type="bearer")
+    
+    return login_result
 
 
 
