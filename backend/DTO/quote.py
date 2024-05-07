@@ -19,6 +19,13 @@ class SubtextDTO(BaseModel):
     subtext_id : int
     subtext : str
 
+class QuoteMetaDTO(BaseModel):
+    quote_id : int
+    quote_category_id : int
+    quote_speaker_id : int
+    quote_source : str | None = None
+    quote_sbutext_id : int | None = None
+
 class QuoteResultDTO(BaseModel):
     quote_id : int
     quote_sentence : SentenceDTO

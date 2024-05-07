@@ -7,7 +7,7 @@ from database import get_db
 from DTO.user import CreateUserDataDTO, LoginDataDTO
 from DTO.auth import Token
 
-from view.user_manage import (create_user, login_user,
+from service.user_manage import (create_user, login_user,
                             #   google_login, get_google_login_url
                               )
 
