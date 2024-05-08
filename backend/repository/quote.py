@@ -4,10 +4,9 @@ from sqlalchemy.orm import Session
 
 from model.quote import (Quote, QuoteCategory, QuoteSentence, QuoteSubtext,
                          UserCheckedCategory)
-from model.user import User
 from model.speaker import Speaker
 
-from DTO.quote import QuoteResultDTO, SentenceDTO, SpeakerDTO, SubtextDTO, CategoryDTO, QuoteMetaDTO
+from DTO.quote import QuoteResultDTO, SentenceDTO, SubtextDTO, CategoryDTO, QuoteMetaDTO, QuoteSpeakerDTO
 
 class QuoteRepository:
     
@@ -22,10 +21,14 @@ class QuoteRepository:
               
         return quote_meta
 
-    def get_speaker(self, speaker_id : int) -> SpeakerDTO:
+    # 코드 가독성 및 참조 편의를 위한 예외적 참조!
+    def _get_speaker(self, speaker_id : int) -> QuoteSpeakerDTO:
+        
+        """" speaker 객체가 필요하면, speaker_repo 활용하기 """
+        
         speaker_obj = self.db.query(Speaker).get(speaker_id)
         
-        speaker = SpeakerDTO(**speaker_obj.__dict__)
+        speaker = QuoteSpeakerDTO(**speaker_obj.__dict__)
         
         return speaker
 
@@ -88,7 +91,7 @@ class QuoteRepository:
         sentence = self.get_sentence(quote_id)
         subtext = self.get_subtext(quote_id)
         category = self.get_category(quote_meta.quote_category_id)
-        speaker = self.get_speaker(quote_meta.quote_speaker_id)
+        speaker = self._get_speaker(quote_meta.quote_speaker_id)
         source = quote_meta.quote_source
         
         quote_result = QuoteResultDTO(

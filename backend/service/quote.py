@@ -3,12 +3,7 @@ import random
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from model.quote import (Quote, QuoteCategory, QuoteSentence, QuoteSubtext,
-                         UserCheckedCategory)
-from model.user import User
-from model.speaker import Speaker
-
-from DTO.quote import QuoteResultDTO, SentenceDTO, SpeakerDTO, SubtextDTO, CategoryDTO
+from DTO.quote import QuoteResultDTO, SentenceDTO, SubtextDTO, CategoryDTO, CreateQuoteDTO
 from repository.quote import QuoteRepository
 
 
@@ -56,3 +51,8 @@ def get_quote_by_category(db: Session, category_id : int) -> QuoteResultDTO:
     quote_result = quote_repo.get_assemble_quote_by_meta(quote_meta)
     
     return quote_result
+
+
+def create_new_quote(db: Session, create_quote_data : CreateQuoteDTO):
+    
+    pass

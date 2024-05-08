@@ -15,11 +15,13 @@ class UserRepository:
             return True
         return False
     
+    
     def check_duplicated_login_id(self, login_id : str) -> bool:
 
         if self.db.query(UserProfile).filter(UserProfile.login_id == login_id).count():
             return True
         return False
+    
     
     def create_profile(self, user_profile_data : UserProfile) -> int | bool:
         
@@ -33,6 +35,7 @@ class UserRepository:
         
         return user_id
     
+    
     def create_user(self, user_data : User) -> bool:
         
         try:
@@ -42,6 +45,7 @@ class UserRepository:
             return False
         
         return True
+    
     
     def get_login_validation_value(self, login_id) -> LoginValidationDTO | bool:
         
