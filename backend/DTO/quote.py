@@ -38,7 +38,8 @@ class QuoteResultDTO(BaseModel):
 class CreateQuoteDTO(BaseModel):
     
     quote_ko_sentence : str
-    quote_org_sentence : str
+    quote_org_sentence : str | None = None
+    quote_category : int
     quote_speaker : str | int
-    quote_source : str
-    quote_subtext : str
+    quote_source : str | None = None
+    quote_subtext : str | None = None

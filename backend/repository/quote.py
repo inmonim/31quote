@@ -1,4 +1,4 @@
-
+from fastapi import HTTPException
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -12,6 +12,12 @@ class QuoteRepository:
     
     def __init__(self, db: Session):
         self.db = db
+        
+    
+    def check_category_exists(self, category_id : int) -> bool:
+        if not self.db.query(QuoteCategory).get(category_id):
+            return False
+        return True
     
     
     def get_quote_meta(self, quote_id : int) -> QuoteMetaDTO:
@@ -104,3 +110,18 @@ class QuoteRepository:
         )
         
         return quote_result
+    
+    
+    def create_sentence(self, sentence_obj : QuoteSentence) -> int:
+        
+        try:
+            self.db.add(sentence_obj)
+            self.db.commit()
+            
+            sentence_id = sentence_obj
+        except:
+            return False
+        
+        return sentence_id
+    
+    # def create_subtext(self, subtext)

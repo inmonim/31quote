@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from DTO.quote import QuoteResultDTO, SentenceDTO, SubtextDTO, CategoryDTO, CreateQuoteDTO
 from repository.quote import QuoteRepository
+from model.quote import QuoteSentence
 
 
 
@@ -53,6 +54,21 @@ def get_quote_by_category(db: Session, category_id : int) -> QuoteResultDTO:
     return quote_result
 
 
-def create_new_quote(db: Session, create_quote_data : CreateQuoteDTO):
+def create_quote(db: Session, quote_data : CreateQuoteDTO):
     
-    pass
+    quote_repo = QuoteRepository(db)
+    
+    if not quote_data.quote_speaker:
+        raise HTTPException(404, "speaker is null")
+    
+    sentence_obj = QuoteSentence(ko_sentence = quote_data.quote_ko_sentence,
+                                 org_sentence = quote_data.quote_org_sentence)
+    
+    sentence_id = quote_repo.create_sentence(sentence_obj)
+    if not sentence_id:
+        raise HTTPException(500, "fail to create sentence obj")
+    
+    if not quote_repo.check_category_exists(quote_data.quote_category):
+        raise HTTPException(404, "not found quote's category")
+    
+    

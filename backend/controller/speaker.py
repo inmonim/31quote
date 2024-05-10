@@ -6,7 +6,7 @@ from service import speaker
 from auth.auth import get_current_user
 from database import get_db
 
-from DTO.quote import QuoteResultDTO, CreateQuoteDTO
+from DTO.speaker import CreateSpeakerDTO
 
 router = APIRouter()
 
@@ -17,3 +17,12 @@ async def get_speaker_ctr(speaker_id : int, db : Session = Depends(get_db)):
     
     return JSONResponse(speaker_data.__dict__,
                         200)
+
+
+@router.post('/createSpeaker')
+async def create_speaker(create_speaker_data : CreateSpeakerDTO, db : Session = Depends(get_db)):
+    
+    speaker_data = speaker.create_speaker(db, create_speaker_data)
+    
+    return JSONResponse(vars(speaker_data),
+                        201)
