@@ -5,8 +5,18 @@ from sqlalchemy.orm import Session
 
 from DTO.quote import QuoteResultDTO, SentenceDTO, SubtextDTO, CategoryDTO, CreateQuoteDTO
 from repository.quote import QuoteRepository
-from model.quote import QuoteSentence
+from model.quote import QuoteSentence, QuoteSubtext, Quote
 
+
+def get_quote_by_id(db : Session, quote_id : int) -> QuoteResultDTO:
+    
+    quote_repo = QuoteRepository(db)
+    
+    quote_meta = quote_repo.get_quote_meta(quote_id)
+    
+    quote_result = quote_repo.get_assemble_quote_by_meta(quote_meta)
+    
+    return quote_result
 
 
 def get_random_quote(db : Session) -> QuoteResultDTO:
@@ -54,21 +64,49 @@ def get_quote_by_category(db: Session, category_id : int) -> QuoteResultDTO:
     return quote_result
 
 
-def create_quote(db: Session, quote_data : CreateQuoteDTO):
+# DTO의 데이터를 정리 및 검증 후 생성
+def create_quote(db: Session, quote_data : CreateQuoteDTO) -> int:
     
     quote_repo = QuoteRepository(db)
     
     if not quote_data.quote_speaker:
-        raise HTTPException(404, "speaker is null")
+        raise HTTPException(404, "speaker is empty")
     
     sentence_obj = QuoteSentence(ko_sentence = quote_data.quote_ko_sentence,
                                  org_sentence = quote_data.quote_org_sentence)
-    
     sentence_id = quote_repo.create_sentence(sentence_obj)
+    
     if not sentence_id:
         raise HTTPException(500, "fail to create sentence obj")
     
     if not quote_repo.check_category_exists(quote_data.quote_category):
         raise HTTPException(404, "not found quote's category")
     
+    subtext_id = None
+    if quote_data.quote_subtext:
+        subtext_id = create_subtext(db, quote_data.quote_subtext)
+        if not subtext_id:
+            raise HTTPException(500, "fail to create subtext obj")
     
+    quote_source = quote_data.quote_source
+    
+    quote_obj = Quote(quote_id = sentence_id,
+                      quote_category_id = quote_data.quote_category,
+                      quote_speaker_id = quote_data.quote_speaker,
+                      quote_subtext_id = subtext_id,
+                      quote_source = quote_source)
+    
+    quote_meta_id = quote_repo.create_quote_meta(quote_obj)
+    
+    return quote_meta_id
+
+
+def create_subtext(db : Session, subtext : str) -> int:
+    
+    quote_repo = QuoteRepository(db)
+    
+    subtext_obj = QuoteSubtext(subtext = subtext)
+    
+    subtext_id = quote_repo.create_subtext(subtext_obj)
+    
+    return subtext_id

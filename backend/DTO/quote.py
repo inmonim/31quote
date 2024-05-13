@@ -7,7 +7,7 @@ class CategoryDTO(BaseModel):
 class SentenceDTO(BaseModel):
     sentence_id : int
     ko_sentence : str
-    org_sentence : str
+    org_sentence : str | None
     
 class SubtextDTO(BaseModel):
     subtext_id : int

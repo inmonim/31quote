@@ -112,16 +112,41 @@ class QuoteRepository:
         return quote_result
     
     
+    def create_quote_meta(self, quote_obj : Quote) -> int:
+        try:
+            self.db.add(quote_obj)
+            self.db.commit()
+            
+            quote_meta_id = quote_obj.quote_id
+        except:
+            return False
+        
+        return quote_meta_id
+    
+    
     def create_sentence(self, sentence_obj : QuoteSentence) -> int:
         
         try:
             self.db.add(sentence_obj)
             self.db.commit()
             
-            sentence_id = sentence_obj
-        except:
+            sentence_id = sentence_obj.sentence_id
+        except Exception as e:
+            print(e)
             return False
         
         return sentence_id
     
-    # def create_subtext(self, subtext)
+    
+    def create_subtext(self, subtext : QuoteSubtext) -> int:
+        
+        try:
+            self.db.add(subtext)
+            self.db.commit()
+            
+            subtext_id = subtext.subtext_id
+        
+        except:
+            return False
+
+        return subtext_id

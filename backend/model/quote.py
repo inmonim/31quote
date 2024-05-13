@@ -16,7 +16,7 @@ class Quote(Base):
 class QuoteSentence(Base):
     __tablename__ = 'quote_sentence'
     
-    sentence_id : Mapped[int] = mapped_column(primary_key=True)
+    sentence_id : Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     ko_sentence : Mapped[str] = mapped_column(String(200), nullable=False)
     org_sentence : Mapped[str] = mapped_column(String(400))
 
@@ -29,7 +29,7 @@ class QuoteCategory(Base):
 class QuoteSubtext(Base):
     __tablename__ = 'quote_subtext'
     
-    subtext_id : Mapped[int] = mapped_column(primary_key=True)
+    subtext_id : Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     subtext : Mapped[str] = mapped_column(nullable=False)
 
 class UserCheckedCategory(Base):
