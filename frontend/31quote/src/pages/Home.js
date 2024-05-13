@@ -6,7 +6,7 @@ function HomePage() {
 
   return (
     <div>
-      <div>
+      <div className='container px-5 py-4'>
         <AllRandomQuoteComp/>
       </div>
     </div>

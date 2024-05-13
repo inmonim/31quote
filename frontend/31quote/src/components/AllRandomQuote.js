@@ -32,13 +32,16 @@ function AllRandomQuoteComp() {
   }, [])
 
   return (
-    <div>
-      <div class="container mx-auto rounded-lg shadow border-2 border-green-300">
-        <p>{koSentence}</p>
-        <p>{orgSentence}</p>
-        <p>{speakerName}</p>
-        <p>{speakerOrgName}</p>
-        <p>{source}</p>
+    <div class="container mx-auto p-5 pt-8 rounded-lg shadow border-2 border-green-300">
+      <div class="text-2xl mb-5 font-bold">{koSentence}</div>
+      <div class="text-lg italic text-gray-500 mb-5">{orgSentence}</div>
+      <div class="grid grid-cols-2 gap-4">
+        <div></div>
+        <div class="text-lg italic font-bold">- {speakerName}</div>
+        <div></div>
+        <div class="text-lg italic text-gray-500 font-bold">{speakerOrgName}</div>
+        <div></div>
+        <div>{source}</div>
       </div>
     </div>
   )

@@ -1,7 +1,14 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [],
+  content: {
+    relative: true,
+    files : ['./src/pages/*.{html,js}',
+    './src/components/*.{html,js}'
+  ]},
   theme: {
+    container: {
+      padding: '5rem'
+    },
     extend: {},
   },
   plugins: [],
