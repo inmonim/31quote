@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* 기본 스타일 */
 body {
   font-family: Arial, sans-serif;
@@ -6,7 +10,7 @@ body {
 }
 
 /* 스마트폰 화면 크기에 맞는 스타일 */
-@media (max-width: 375px) {
+/* @media (max-width: 375px) {
   body {
     background-color: #f0f0f0;
   }
@@ -36,4 +40,4 @@ body {
     bottom: 0;
     width: 100%;
   }
-}
+} */
