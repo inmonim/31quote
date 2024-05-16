@@ -34,14 +34,12 @@ def get_quote_by_users_all_category(db: Session, user_id : int) -> QuoteResultDT
     
     quote_repo = QuoteRepository(db)
     
-    checked_category_list = quote_repo.get_users_checked_category_list(user_id)
+    checked_category_list = quote_repo.get_users_checked_category_id_list(user_id)
     
-    category_id_list = [obj.category_id for obj in checked_category_list]
-    
-    if not category_id_list:
+    if not checked_category_list:
         raise HTTPException(404, '유저의 선택 카테고리가 없음')
     
-    random_category_id = random.choice(category_id_list)
+    random_category_id = random.choice(checked_category_list)
     
     quote_meta = quote_repo.get_quote_by_category(random_category_id)
     

@@ -27,7 +27,8 @@ class QuoteRepository:
               
         return quote_meta
 
-    # 코드 가독성 및 참조 편의를 위한 예외적 참조!
+
+    # 코드 가독성 및 참조 편의를 위한 예외적 참조
     def _get_speaker(self, speaker_id : int) -> QuoteSpeakerDTO:
         
         """" speaker 객체가 필요하면, speaker_repo 활용하기 """
@@ -49,7 +50,6 @@ class QuoteRepository:
 
     def get_sentence(self, quote_id: int) -> SentenceDTO:  
         sentence_obj = self.db.query(QuoteSentence).get(quote_id)
-        
         sentence = SentenceDTO(**sentence_obj.__dict__)
         
         return sentence
@@ -74,11 +74,13 @@ class QuoteRepository:
         return quote_meta
     
     
-    def get_users_checked_category_list(self, user_id : int) -> list[QuoteCategory]:
+    def get_users_checked_category_id_list(self, user_id : int) -> list[int]:
         checked_category = self.db.query(UserCheckedCategory
                                          ).filter(UserCheckedCategory.user_id == user_id)
         
-        return checked_category
+        category_id_list = [obj.category_id for obj in checked_category]
+        
+        return category_id_list
     
     
     def get_quote_by_category(self, category_id : int) -> QuoteMetaDTO:
@@ -86,6 +88,8 @@ class QuoteRepository:
         quote = self.db.query(Quote).filter(Quote.quote_category_id == category_id
                                             ).order_by(func.random()
                                                        ).first()
+        
+        quote = QuoteMetaDTO(**vars(quote))
         
         return quote
 

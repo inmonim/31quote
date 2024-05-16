@@ -19,7 +19,7 @@ async def get_all_random_quote(db : Session = Depends(get_db)) -> QuoteResultDTO
     return JSONResponse(jse(quote_result), 200)
 
 
-@router.get('/getUsersAllCatergoryByOneQuote')
+@router.get('/getQuoteByUsersAllCategory')
 async def get_quote_by_users_all_category(db : Session = Depends(get_db),
                                                   user_id : int = Depends(get_current_user),
                                                   ) -> QuoteResultDTO:
@@ -48,3 +48,4 @@ async def create_new_quote(create_quote_data : CreateQuoteDTO, db : Session = De
     
     return JSONResponse(jse(quote_result),
                         201)
+

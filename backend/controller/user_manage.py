@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.encoders import jsonable_encoder as jse
 from sqlalchemy.orm import Session
 
 from database import get_db
-from DTO.user import CreateUserDataDTO, LoginDataDTO
+from DTO.user import CreateUserDataDTO, LoginDataDTO, UserDataDTO
 from DTO.auth import Token
 
 from service.user_manage import (create_user, login_user,
@@ -25,11 +26,11 @@ def create_user_controller(user_data : CreateUserDataDTO, db : Session = Depends
                             201)
 
 @router.post('/login')
-def login_controller(login_data : OAuth2PasswordRequestForm = Depends(), db : Session = Depends(get_db)):
+def login_controller(login_data : OAuth2PasswordRequestForm = Depends(), db : Session = Depends(get_db)) -> UserDataDTO:
     
     result_data = login_user(login_data, db)
     
-    return JSONResponse(result_data.__dict__,
+    return JSONResponse(jse(result_data),
                         200)
 
 
