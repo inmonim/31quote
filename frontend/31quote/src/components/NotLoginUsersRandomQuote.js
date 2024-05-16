@@ -1,7 +1,7 @@
 import backendApi from '../api/axiosInstance'
 import React, { useState, useEffect } from 'react'
 
-function AllRandomQuoteComp() {
+function NotLoginUsersRandomQuote() {
   
   const [quoteID, setQuoteID] = useState('')
   const [koSentence, setKoSentence] = useState('')
@@ -13,8 +13,13 @@ function AllRandomQuoteComp() {
   const [category, setCategory] = useState('')
 
   useEffect(() => {
+
+    // 로그인이 된 상태면 호출 X
+    if (localStorage.getItem('accessToken')) {
+      return
+    }
     
-    backendApi.get('http://localhost:5051/api/v1/quote/getAllRandomQuote')
+    backendApi.get('/quote/getAllRandomQuote')
       .then(response => {
         const quoteData = response.data;
         setQuoteID(quoteData.quote_id)
@@ -38,7 +43,7 @@ function AllRandomQuoteComp() {
       <div class="grid grid-cols-2 gap-4">
         <div></div>
         <div class="text-lg italic font-bold">- {speakerName}</div>
-        <div></div>
+        <div class="text-lg font-semibold">{category}</div>
         <div class="text-lg italic text-gray-500 font-bold">{speakerOrgName}</div>
         <div></div>
         <div>{source}</div>
@@ -47,4 +52,4 @@ function AllRandomQuoteComp() {
   )
 }
 
-export default AllRandomQuoteComp
+export default NotLoginUsersRandomQuote
