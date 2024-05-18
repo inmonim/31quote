@@ -13,7 +13,7 @@ def get_all_category_list(db : Session) -> list[CategoryDTO]:
     return category_list
 
 
-def get_uses_category_list(db : Session, user_id : int) -> list[CategoryDTO]:
+def get_users_category_list(db : Session, user_id : int) -> list[CategoryDTO]:
     
     user_setting_repo = UserSettingRepositry(db)
     
@@ -56,6 +56,6 @@ def update_users_category(db : Session, user_id : int, checked_category_list : l
             raise HTTPException(500, "failed add users category")
     
     
-    updated_users_category_list = get_category_list_by_user(db, user_id)
+    updated_users_category_list = get_users_category_list(db, user_id)
     
     return updated_users_category_list

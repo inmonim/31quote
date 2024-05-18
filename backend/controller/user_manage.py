@@ -5,12 +5,13 @@ from fastapi.encoders import jsonable_encoder as jse
 from sqlalchemy.orm import Session
 
 from database import get_db
-from DTO.user import CreateUserDataDTO, LoginDataDTO, UserDataDTO
-from DTO.auth import Token
+from DTO.user import CreateUserDataDTO, UserDataDTO
+from DTO.auth import TokenSet
 
-from service.user_manage import (create_user, login_user,
+from service.user_manage import (create_user, login_user
                             #   google_login, get_google_login_url
                               )
+from auth.auth import reissuance_access_token
 
 router = APIRouter()
 
@@ -31,6 +32,18 @@ def login_controller(login_data : OAuth2PasswordRequestForm = Depends(), db : Se
     result_data = login_user(login_data, db)
     
     return JSONResponse(jse(result_data),
+                        200)
+
+
+@router.post('/refresh')
+async def reissuance_access_token_controller(token_set : TokenSet):
+    
+    access_token = token_set.access_token
+    refresh_token = token_set.refresh_token
+    
+    new_access_token = reissuance_access_token(access_token, refresh_token)
+    
+    return JSONResponse({'access_token': new_access_token},
                         200)
 
 

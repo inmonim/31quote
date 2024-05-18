@@ -16,7 +16,7 @@ app.add_middleware(
     )
 
 app.include_router(quote.router, prefix='/api/v1/quote', tags=['quote'])
-app.include_router(user_manage.router, prefix='/api/v1/user', tags=['user_manage', 'users_account'])
+app.include_router(user_manage.router, prefix='/api/v1/user', tags=['user_manage'])
 app.include_router(speaker.router, prefix='/api/v1/speaker', tags=['speaker'])
 app.include_router(user_setting.router, prefix='/api/v1/user_setting', tags=['user_setting'])
 

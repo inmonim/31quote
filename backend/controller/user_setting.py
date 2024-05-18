@@ -22,7 +22,7 @@ async def get_all_category(db : Session = Depends(get_db)):
 @router.get('/getUserCategory')
 async def get_user_category(user_id : int = Depends(get_current_user), db : Session = Depends(get_db)) -> list[CategoryDTO]:
     
-    user_category_result = user_setting.get_uses_category_list(db, user_id)
+    user_category_result = user_setting.get_users_category_list(db, user_id)
     
     if not len(user_category_result):
         return JSONResponse({'message' : 'not found checked category'},
