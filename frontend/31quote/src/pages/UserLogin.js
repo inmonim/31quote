@@ -38,13 +38,10 @@ function UserLogin() {
         }
       }
     ).then((response) => {
-      console.log(response)
       localStorage.setItem('accessToken', response.data.access_token)
+      localStorage.setItem('refreshToken', response.data.refresh_token)
       }
-    ).then(() => {
-      const access_token = localStorage.getItem('accessToken')
-      console.log(access_token)
-    })
+    )
     .catch((error) => {
       console.log(error)
     })

@@ -4,28 +4,29 @@ import { useNavigate } from 'react-router-dom'
 import GoToUserButton from '../components/GoToUserButton';
 import NotLoginUsersRandomQuote from '../components/NotLoginUsersRandomQuote';
 import UsersCheckCategoryQuote from '../components/UsersCheckCategoryQuote';
+import ChooseCategory from '../components/ChooseCategory';
 
 
 function HomePage() {
   const navigate = useNavigate();
 
   const GoToUserButtonClick = () => {
-    setTimeout(() => {navigate('/login');}, 200)
+    setTimeout(() => {navigate('/login');}, 200);
   };
+  
+  const [ isCategoryModalOpen, setIsCategoryModalOpen ] = useState(false);
+  const [ isLogined, setIsLogined ] = useState(false);
 
-  const [ isLogined, setIsLogined ] = useState(false)
+  const openModal = () => {
+    isCategoryModalOpen ? setIsCategoryModalOpen(false) : setIsCategoryModalOpen(true)
+  }
 
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');
-
     if (accessToken) {
       setIsLogined(true);
     }
-
-    console.log(accessToken)
   }, []);
-
-
 
   return (
     <div class="relative container px-3 py-4">
@@ -34,6 +35,10 @@ function HomePage() {
       ) : (
         <NotLoginUsersRandomQuote />
       )}
+
+      <button onClick={openModal}>openmodal</button>
+      <ChooseCategory isOpen={isCategoryModalOpen} ModalClose={openModal}/>
+
       <button onClick={GoToUserButtonClick}>
         <GoToUserButton />
       </button>
