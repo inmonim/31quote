@@ -8,6 +8,15 @@ class UserSettingRepositry:
     
     def __init__(self, db : Session):
         self.db = db
+        
+        
+    def get_all_category_list(self) -> list[CategoryDTO]:
+        
+        category_list = self.db.query(QuoteCategory).all()
+        
+        category_list = [CategoryDTO(**vars(category)) for category in category_list]
+        
+        return category_list
     
     
     def get_users_checked_category_id_list(self, user_id : int) -> list[int]:

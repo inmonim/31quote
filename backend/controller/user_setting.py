@@ -10,10 +10,19 @@ from service import user_setting
 
 router = APIRouter()
 
+@router.get('/getAllCategory')
+async def get_all_category(db : Session = Depends(get_db)):
+    
+    category_list = user_setting.get_all_category_list(db)
+    
+    return JSONResponse(jse(category_list),
+                        200)
+
+
 @router.get('/getUserCategory')
 async def get_user_category(user_id : int = Depends(get_current_user), db : Session = Depends(get_db)) -> list[CategoryDTO]:
     
-    user_category_result = user_setting.get_category_list_by_user(db, user_id)
+    user_category_result = user_setting.get_uses_category_list(db, user_id)
     
     if not len(user_category_result):
         return JSONResponse({'message' : 'not found checked category'},

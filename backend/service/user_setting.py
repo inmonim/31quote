@@ -4,8 +4,16 @@ from sqlalchemy.orm import Session
 from repository.user_setting import UserSettingRepositry
 from DTO.user_setting import CategoryDTO
 
+def get_all_category_list(db : Session) -> list[CategoryDTO]:
+    
+    user_setting_repo = UserSettingRepositry(db)
+    
+    category_list = user_setting_repo.get_all_category_list()
+    
+    return category_list
 
-def get_category_list_by_user(db : Session, user_id : int) -> list[CategoryDTO]:
+
+def get_uses_category_list(db : Session, user_id : int) -> list[CategoryDTO]:
     
     user_setting_repo = UserSettingRepositry(db)
     
