@@ -4,11 +4,7 @@ from fastapi import HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 
-from env import ENV
-
-ALGORITHM = ENV['ALGORITHM']
-SECRET_KEY = ENV['SECRET_KEY']
-ACCESS_TOKEN_EXPIRE_MINUTES = int(ENV['ACCESS_TOKEN_EXPIRE_MINUTES'])
+from config import ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/user/login")
 
@@ -31,11 +27,11 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> int:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id: str = payload.get("sub")
-        if user_id is None:
+        if not user_id:
             raise credentials_exception
     except JWTError as e:
         raise credentials_exception
-    if user_id is None:
+    if not user_id:
         raise credentials_exception
 
     return user_id

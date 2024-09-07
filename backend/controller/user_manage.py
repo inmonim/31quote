@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from database import get_db
+from config import get_db
 from DTO.user import CreateUserDataDTO, LoginDataDTO
 from DTO.auth import Token
 

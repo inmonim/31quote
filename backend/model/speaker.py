@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import mapped_column, Mapped
 
-from database import Base
+from config import Base
 
 class Speaker(Base):
     

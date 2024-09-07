@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from service import speaker
 from auth.auth import get_current_user
-from database import get_db
+from config import get_db
 
 from DTO.speaker import CreateSpeakerDTO
 

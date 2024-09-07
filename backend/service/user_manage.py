@@ -11,13 +11,6 @@ from repository.user_manage import UserRepository
 from model.user import User, UserProfile
 from auth.auth import create_access_token
 
-from env import ENV
-GOOGLE_CLIENT_ID = ENV['GOOGLE_CLIENT_ID']
-GOOGLE_CLIENT_SECRET = ENV['GOOGLE_CLIENT_SECRET']
-GOOGLE_REDIRECT_URI = ENV['GOOGLE_REDIRECT_URI']
-
-ACCESS_TOKEN_EXPIRE_MINUTES = int(ENV['ACCESS_TOKEN_EXPIRE_MINUTES'])
-
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated = 'auto')
 
 
@@ -80,9 +73,9 @@ def login_user(login_user_data : OAuth2PasswordRequestForm, db : Session) -> Use
     if verify_password(plain_pw, hashed_pw) == False:
         raise HTTPException(401, '비밀번호 불일치')
     
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    # access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": str(user_id)}, expires_delta=access_token_expires
+        data={"sub": str(user_id)}, expires_delta=3600
     )
     
     login_result = UserDataDTO(user_id=user_id,
