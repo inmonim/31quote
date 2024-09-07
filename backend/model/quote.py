@@ -1,41 +1,23 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.orm import mapped_column, Mapped, foreign
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, func
+from sqlalchemy.orm import relationship
 
-from config import Base
-
+from .base import Base
+from model import Category, Speaker, Reference
 
 class Quote(Base):
-    __tablename__ = 'quote_meta'
+    __tablename__ = 'quotes'
     
-    quote_id : Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    quote_category_id : Mapped[int]
-    quote_subtext_id : Mapped[int]
-    quote_speaker_id : Mapped[int] = mapped_column(nullable=False)
-    quote_source : Mapped[str] = mapped_column(String(30))
-
-class QuoteSentence(Base):
-    __tablename__ = 'quote_sentence'
+    quote_id = Column(Integer, primary_key=True, autoincrement=True)
+    ko_sentence = Column(String(2047), nullable=False)
+    en_sentence = Column(String(2047))
     
-    sentence_id : Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    ko_sentence : Mapped[str] = mapped_column(String(200), nullable=False)
-    org_sentence : Mapped[str] = mapped_column(String(400))
-
-class QuoteCategory(Base):
-    __tablename__ = 'quote_category'
+    created_at = Column(DateTime, default=func.now)
+    updated_at = Column(DateTime, default=func.now, onupdate=func.now)
     
-    category_id : Mapped[int] = mapped_column(primary_key=True)
-    category : Mapped[str] = mapped_column(String(30))
-
-class QuoteSubtext(Base):
-    __tablename__ = 'quote_subtext'
+    category_id = Column(Integer, ForeignKey('categories.category_id'))
+    speaker_id = Column(Integer, ForeignKey('speakers.speaker_id'))
+    reference_id = Column(Integer, ForeignKey('references.reference_id'))
     
-    subtext_id : Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    subtext : Mapped[str] = mapped_column(nullable=False)
-
-class UserCheckedCategory(Base):
-    __tablename__ = 'user_checked_category'
-    
-    user_checked_category_id : Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id : Mapped[int] = mapped_column(nullable=False)
-    category_id : Mapped[int] = mapped_column(nullable=False)
-
+    category = relationship('Category')
+    speaker = relationship('Speaker')
+    reference = relationship('Reference')

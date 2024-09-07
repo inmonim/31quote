@@ -1,23 +1,25 @@
 from datetime import datetime
 
-from sqlalchemy import Integer, String, func
-from sqlalchemy.orm import mapped_column, Mapped
+from sqlalchemy import Column, BigInteger, Integer, String, SmallInteger, ForeignKey, func
+from sqlalchemy.orm import relationship
 
-from config import Base
+from .base import Base
 
-class UserProfile(Base):
-    __tablename__ = 'user_profile'
+
+class Role(Base):
+    __tablename__ = 'roles'
     
-    user_id : Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    nickname : Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
-    login_id : Mapped[str] = mapped_column(String(30), unique=True, nullable=False)
-    password : Mapped[str] = mapped_column(String(200), nullable=False)
-    create_at : Mapped[datetime] = mapped_column(insert_default=func.now(), nullable=False)
-    update_at : Mapped[datetime]
-    is_available : Mapped[int] = mapped_column(default=1)
+    role_id = Column(Integer, primary_key=True)
+    role = Column(String(45), nullable=False)
 
 class User(Base):
-    __tablename__ = 'user'
+    __tablename__ = 'users'
     
-    user_id : Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    nickname : Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
+    user_id = Column(BigInteger, primary_key=True, autoincrement=True)
+    nickname = Column(String(45), nullable=False)
+    login_id = Column(String(255))
+    password = Column(String(255))
+    is_activate = Column(SmallInteger, default=1)
+    
+    role_id = Column(Integer, ForeignKey('roles.role_id'))
+    role = relationship('Role')
