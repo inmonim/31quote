@@ -18,8 +18,8 @@ class Reference(Base):
     reference_name = Column(String(255), nullable=False)
     year = Column(Integer, nullable=True)
     
-    created_at = Column(DateTime, default=func.now)
-    updated_at = Column(DateTime, default=func.now, onupdate=func.now)
+    created_at = Column(DateTime, default=func.current_timestamp())
+    updated_at = Column(DateTime, default=func.current_timestamp(), onupdate=func.current_timestamp())
     
     reference_type_id = Column(Integer, ForeignKey('reference_types.reference_type_id'))
     reference_type = relationship('ReferenceType')

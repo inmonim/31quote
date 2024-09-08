@@ -11,5 +11,5 @@ class Speaker(Base):
     org_name = Column(String(45))
     speaker_description = Column(String(2047))
     
-    created_at = Column(DateTime, default=func.now)
-    updated_at = Column(DateTime, default=func.now, onupdate=func.now)
+    created_at = Column(DateTime, default=func.current_timestamp())
+    updated_at = Column(DateTime, default=func.current_timestamp(), onupdate=func.current_timestamp())

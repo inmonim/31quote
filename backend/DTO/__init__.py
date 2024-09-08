@@ -1,0 +1,3 @@
+from .create_category_dto import CreateCategoryDTO
+from .create_quote_dto import CreateQuoteDTO
+from .create_speaker_dto import CreateSpeakerDTO

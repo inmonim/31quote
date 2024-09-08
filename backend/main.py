@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 from fastapi.middleware.cors import CORSMiddleware
 
-from controller import quote, user_manage, speaker
+from controller import quote_manage_router
 
 app = FastAPI()
 
@@ -14,9 +14,7 @@ app.add_middleware(
     allow_headers=['*']
     )
 
-app.include_router(quote.router, prefix='/api/v1/quote', tags=['quote'])
-app.include_router(user_manage.router, prefix='/api/v1/user', tags=['user'])
-app.include_router(speaker.router, prefix='/api/v1/speaker', tags=['speaker'])
+app.include_router(quote_manage_router, prefix='/quote', tags=['quote'])
 
 @app.get('/')
 async def home():
