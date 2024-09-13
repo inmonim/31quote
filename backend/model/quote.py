@@ -2,7 +2,6 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, func
 from sqlalchemy.orm import relationship
 
 from .base import Base
-from model import Category, Speaker, Reference
 
 class Quote(Base):
     __tablename__ = 'quotes'
@@ -15,8 +14,8 @@ class Quote(Base):
     updated_at = Column(DateTime, default=func.current_timestamp(), onupdate=func.current_timestamp())
     
     category_id = Column(Integer, ForeignKey('categories.category_id'))
-    speaker_id = Column(Integer, ForeignKey('speakers.speaker_id'))
-    reference_id = Column(Integer, ForeignKey('references.reference_id'))
+    speaker_id = Column(Integer, ForeignKey('speakers.speaker_id'), nullable=True)
+    reference_id = Column(Integer, ForeignKey('references.reference_id'), nullable=True)
     
     category = relationship('Category')
     speaker = relationship('Speaker')

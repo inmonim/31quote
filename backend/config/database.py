@@ -5,7 +5,7 @@ from .env import (DB_HOST, DB_PASSWORD, DB_PORT, DB_TABLE, DB_USERNAME)
 
 _DB_URL = f'mysql+pymysql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_TABLE}'
 
-_engine = create_engine(url=_DB_URL, pool_recycle=3600)
+_engine = create_engine(url=_DB_URL, pool_recycle=3600, echo=True)
 
 _SessionMaker = sessionmaker(bind=_engine)
 

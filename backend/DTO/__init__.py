@@ -1,3 +1,5 @@
-from .create_category_dto import CreateCategoryDTO
-from .create_quote_dto import CreateQuoteDTO
-from .create_speaker_dto import CreateSpeakerDTO
+from .reference_dto import CreateReferenceDTO, CreateReferenceTypeDTO, ResponseReferenceDTO, ResponseReferenceTypeDTO
+from .category_dto import ResponseCategoryDTO, CreateCategoryDTO
+from .speaker_dto import CreateSpeakerDTO, ResponseSpeakerDTO
+
+from .quote_dto import CreateQuoteDTO, ResponseQuoteDTO

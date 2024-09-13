@@ -8,7 +8,7 @@ class ReferenceType(Base):
     __tablename__ = "reference_types"
 
     reference_type_id = Column(Integer, primary_key=True)
-    reference_tyep = Column(String(45))
+    reference_type = Column(String(45))
 
 
 class Reference(Base):

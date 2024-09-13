@@ -1,1 +1,4 @@
-from .speaker import SpeakerRepository
+from .speaker_repository import SpeakerRepository
+from .category_repository import CategoryRepository
+from .quote_repository import QuoteRepository
+from .reference_repository import ReferenceRepository
