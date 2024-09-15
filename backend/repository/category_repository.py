@@ -19,3 +19,8 @@ class CategoryRepository:
     def get_category(self, category_id : int) -> Category | None:
         category = self.db.query(Category).get(category_id)
         return category
+    
+    def find_categories(self, search_text : str) -> list[Category]:
+        categories = self.db.query(Category).filter(Category.category.like(f"%{search_text}%")).all()
+        
+        return categories

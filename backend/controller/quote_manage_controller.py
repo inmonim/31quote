@@ -6,7 +6,7 @@ from config import get_db
 from service import QuoteManageService
 
 from DTO import CreateCategoryDTO, CreateQuoteDTO, CreateSpeakerDTO, CreateReferenceDTO, CreateReferenceTypeDTO
-from DTO import ResponseCategoryDTO, ResponseQuoteDTO, ResponseReferenceDTO, ResponseReferenceTypeDTO, ResponseSpeakerDTO
+from DTO import ResponseCategoryDTO, ResponseQuoteDTO, ResponseReferenceDTO, ResponseReferenceTypeDTO, ResponseSpeakerDTO, ResponseQuoteKoSentenceDTO, ResponseSpeakerKoNameDTO
 
 router = APIRouter()
 
@@ -70,3 +70,34 @@ def get_reference_type(reference_type_id : int, db : Session = Depends(get_db)) 
     reference_type = QuoteManageService(db).get_reference_type(reference_type_id)
     
     return reference_type
+
+
+@router.get("/find_quotes")
+def find_quote(search_text : str, db : Session = Depends(get_db)) -> list[ResponseQuoteKoSentenceDTO]:
+    quotes = QuoteManageService(db).find_quote(search_text)
+    
+    return quotes
+
+@router.get("/find_speakers")
+def find_speakers(search_text : str, db : Session = Depends(get_db)) -> list[ResponseSpeakerKoNameDTO]:
+    speakers = QuoteManageService(db).find_speakers(search_text)
+    
+    return speakers
+
+@router.get("/find_categories")
+def find_categories(search_text : str, db : Session = Depends(get_db)) -> list[ResponseCategoryDTO]:
+    categories = QuoteManageService(db).find_categories(search_text)
+    
+    return categories
+
+@router.get("/find_references")
+def find_references(search_text : str, db : Session = Depends(get_db)) -> list[ResponseReferenceDTO]:
+    references = QuoteManageService(db).find_references(search_text)
+    
+    return references
+
+@router.get("/all_reference_types")
+def get_all_reference_types(db : Session = Depends(get_db)) -> list[ResponseReferenceTypeDTO]:
+    reference_types = QuoteManageService(db).get_all_reference_types()
+    
+    return reference_types

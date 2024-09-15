@@ -1,8 +1,9 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from repository import SpeakerRepository, CategoryRepository, QuoteRepository, ReferenceRepository
 from DTO import CreateSpeakerDTO, CreateCategoryDTO, CreateReferenceDTO, CreateReferenceTypeDTO, CreateQuoteDTO
-from DTO import ResponseSpeakerDTO, ResponseCategoryDTO, ResponseQuoteDTO, ResponseReferenceDTO, ResponseReferenceTypeDTO
+from DTO import ResponseSpeakerDTO, ResponseCategoryDTO, ResponseQuoteDTO, ResponseReferenceDTO, ResponseReferenceTypeDTO, ResponseQuoteKoSentenceDTO, ResponseSpeakerKoNameDTO
 
 class QuoteManageService:
     
@@ -45,8 +46,7 @@ class QuoteManageService:
     
     def get_quote(self, quote_id : int) -> ResponseQuoteDTO:
         quote = self.quote_repo.get_quote(quote_id)
-        if quote:
-            quote_response = ResponseQuoteDTO.model_validate(quote)
+        quote_response = ResponseQuoteDTO.model_validate(quote)
         return quote_response
     
     
@@ -70,3 +70,50 @@ class QuoteManageService:
         reference_type = self.reference_repo.get_reference_type(reference_type_id)
         reference_type_response = ResponseReferenceTypeDTO.model_validate(reference_type)
         return reference_type_response
+    
+    
+    def find_quote(self, search_text : str) -> list[ResponseQuoteKoSentenceDTO]:
+        result = self.quote_repo.find_quote(search_text)
+        
+        if not result:
+            raise HTTPException(404, "리소스 없음")
+        
+        quotes = [ResponseQuoteKoSentenceDTO.model_validate(quote) for quote in result]
+        return quotes
+    
+    def find_speakers(self, search_text : str) -> list[ResponseSpeakerKoNameDTO]:
+        result = self.speaker_repo.find_speaker(search_text)
+        
+        if not result:
+            raise HTTPException(404, "발언자 없음")
+        
+        speakers = [ResponseSpeakerKoNameDTO.model_validate(speaker) for speaker in result]
+        
+        return speakers
+    
+    def find_categories(self, search_text : str) -> list[ResponseCategoryDTO]:
+        result = self.category_repo.find_categories(search_text)
+        
+        if not result:
+            raise HTTPException(404, "카테고리 없음")
+        
+        categories = [ResponseCategoryDTO.model_validate(category) for category in result]
+        
+        return categories
+    
+    def find_references(self, search_text : str) -> list[ResponseReferenceDTO]:
+        result = self.reference_repo.find_references(search_text)
+        
+        if not result:
+            raise HTTPException(404, "레퍼런스 없음")
+        
+        references = [ResponseReferenceDTO.model_validate(reference) for reference in result]
+        
+        return references
+    
+    def get_all_reference_types(self) -> list[ResponseReferenceTypeDTO]:
+        result = self.reference_repo.get_all_reference_types()
+        
+        reference_types = [ResponseReferenceTypeDTO.model_validate(reference_type) for reference_type in result]
+        
+        return reference_types

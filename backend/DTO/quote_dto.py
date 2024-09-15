@@ -28,3 +28,12 @@ class ResponseQuoteDTO(BaseModel):
     
     class Config:
         from_attributes = True
+        
+        
+class ResponseQuoteKoSentenceDTO(BaseModel):
+    
+    quote_id : int
+    ko_sentence : str
+    
+    class Config:
+        from_attributes = True

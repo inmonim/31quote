@@ -16,6 +16,13 @@ class QuoteRepository:
         return quote
 
     def get_quote(self, quote_int : int) -> Quote | None:
-        quote = self.db.query(Quote).options(joinedload(Quote.category), joinedload(Quote.reference).joinedload(Reference.reference_type), joinedload(Quote.speaker)).get(quote_int)
+        quote = self.db.query(Quote).options(joinedload(Quote.category),
+                                             joinedload(Quote.speaker),
+                                             joinedload(Quote.reference).joinedload(Reference.reference_type),
+                                             ).get(quote_int)
     
         return quote
+    
+    def find_quote(self, search_text : str) -> list[Quote] | None:
+        result = self.db.query(Quote).filter(Quote.ko_sentence.like(f"%{search_text}%")).all()
+        return result
