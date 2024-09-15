@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 
-
 class CreateCategoryDTO(BaseModel):
     
     categroy_id : str
@@ -10,3 +9,6 @@ class ResponseCategoryDTO(BaseModel):
     
     category_id : int
     category : str
+    
+    class Config:
+        from_attributes = True

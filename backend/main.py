@@ -16,6 +16,7 @@ app.add_middleware(
 
 app.include_router(quote_manage_router, prefix='/quote', tags=['quote'])
 
+
 @app.get('/')
 async def home():
     return {'hello' : '31quote'}

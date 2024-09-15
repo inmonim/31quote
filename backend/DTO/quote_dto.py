@@ -26,21 +26,5 @@ class ResponseQuoteDTO(BaseModel):
     speaker : Optional[ResponseSpeakerDTO | None] = None
     reference : Optional[ResponseReferenceDTO | None] = None
     
-    @classmethod
-    def from_model(cls, quote : Quote):
-        category_dto = model_to_dto(quote.category, ResponseCategoryDTO)
-        
-        speaker_dto = None
-        if (speaker := quote.speaker):
-            speaker_dto = model_to_dto(speaker, ResponseSpeakerDTO)
-        
-        reference = None
-        if (reference := quote.reference):
-            reference_dto = ResponseReferenceDTO.from_model(reference)
-        
-        return cls(quote_id = quote.quote_id,
-                   ko_sentence = quote.ko_sentence,
-                   en_sentence = quote.en_sentence,
-                   category = category_dto,
-                   speaker = speaker_dto,
-                   reference = reference_dto)
+    class Config:
+        from_attributes = True

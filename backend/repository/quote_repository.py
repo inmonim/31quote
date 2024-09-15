@@ -17,5 +17,5 @@ class QuoteRepository:
 
     def get_quote(self, quote_int : int) -> Quote | None:
         quote = self.db.query(Quote).options(joinedload(Quote.category), joinedload(Quote.reference).joinedload(Reference.reference_type), joinedload(Quote.speaker)).get(quote_int)
-        
+    
         return quote

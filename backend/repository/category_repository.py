@@ -16,6 +16,6 @@ class CategoryRepository:
         self.db.commit()
         return category
     
-    def get_category(self, category_id : int) -> Category:
+    def get_category(self, category_id : int) -> Category | None:
         category = self.db.query(Category).get(category_id)
         return category
