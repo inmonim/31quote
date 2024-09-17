@@ -1,14 +1,17 @@
-from sqlalchemy import Integer, String
-from sqlalchemy.orm import declarative_base
-from sqlalchemy.orm import mapped_column, Mapped
+from sqlalchemy import Column, Integer, String, DateTime, func
 
-Base = declarative_base()
+from .base import Base
+
 
 class Speaker(Base):
+    __tablename__ = 'speakers'
     
-    __tablename__ = 'speaker'
+    speaker_id = Column(Integer, primary_key=True, autoincrement=True)
+    ko_name = Column(String(45), nullable=False)
+    org_name = Column(String(45))
+    speaker_description = Column(String(2047))
+    born_date = Column(String(45))
+    death_date = Column(String(45))
     
-    speaker_id : Mapped[int] = mapped_column(primary_key=True)
-    speaker_name : Mapped[str] = mapped_column(String(30))
-    speaker_org_name : Mapped[str] = mapped_column(String(50))
-    speaker_summary : Mapped[str] = mapped_column(String(500))
+    created_at = Column(DateTime, default=func.current_timestamp())
+    updated_at = Column(DateTime, default=func.current_timestamp(), onupdate=func.current_timestamp())
