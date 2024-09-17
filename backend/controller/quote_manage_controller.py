@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, UploadFile, File
-from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from config import get_db
@@ -104,7 +103,7 @@ def get_all_reference_types(db : Session = Depends(get_db)) -> list[ResponseRefe
 
 
 @router.post("/input_xlsx")
-async def input_quote_to_xlsx(xlsx_file : UploadFile = File(...), db : Session = Depends(get_db)):
+async def input_quote_to_xlsx(xlsx_file : UploadFile = File(...), db : Session = Depends(get_db)) -> int:
     
     fail_cnt = await QuoteManageService(db).input_quote_xlsx(xlsx_file)
     
