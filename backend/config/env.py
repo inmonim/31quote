@@ -16,6 +16,6 @@ else:
     
     ALGORITHM = env.get('ALGORITHM')
     SECRET_KEY = env.get('SECRET_KEY')
-    ACCESS_TOKEN_EXPIRE_MINUTES = int(env.get('ACCESS_TOKEN_EXPIRE_MINUTES'))
+    ACCESS_TOKEN_EXPIRE_MINUTES = env.get('ACCESS_TOKEN_EXPIRE_MINUTES')
     
     del env
