@@ -1,5 +1,7 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+import pandas as pd
+from io import BytesIO
 
 from repository import SpeakerRepository, CategoryRepository, QuoteRepository, ReferenceRepository
 from DTO import CreateSpeakerDTO, CreateCategoryDTO, CreateReferenceDTO, CreateReferenceTypeDTO, CreateQuoteDTO
@@ -117,3 +119,65 @@ class QuoteManageService:
         reference_types = [ResponseReferenceTypeDTO.model_validate(reference_type) for reference_type in result]
         
         return reference_types
+    
+    
+    async def input_quote_xlsx(self, xlsx):
+        
+        contents = await xlsx.read()
+        excel_data = BytesIO(contents)
+        
+        df = pd.read_excel(excel_data, engine="openpyxl")
+        
+        df = df.replace({float('nan') : None})
+        
+        fail_cnt = 0
+        
+        for i in range(len(df)):
+            category = df.iloc[i, 0]
+            ko_sentence = df.iloc[i, 1]
+            org_sentence = df.iloc[i, 2]
+            speaker_ko_name = df.iloc[i, 3]
+            reference = df.iloc[i, 4]
+            reference_type = df.iloc[i, 5]
+            speaker_org_name = df.iloc[i, 6]
+            
+            if self.quote_repo.find_quote(ko_sentence):
+                continue
+            
+            category_id = self.category_repo.find_categories(category)[0].category_id
+            
+            speaker_id = None
+            if not pd.isna(speaker_ko_name):
+                speakers = self.speaker_repo.find_speaker(speaker_ko_name)
+                if not speakers:
+                    create_speaker = CreateSpeakerDTO(ko_name=speaker_ko_name,
+                                    org_name=speaker_org_name)
+                    speaker_id = self.speaker_repo.create_speaker(create_speaker).speaker_id
+                else:
+                    speaker_id = speakers[0].speaker_id
+            
+            reference_id = None
+            if not pd.isna(reference):
+                references = self.reference_repo.find_references(reference)
+                
+                if not references:
+                    reference_types = self.reference_repo.get_all_reference_types()
+                    for rt in reference_types:
+                        if rt.reference_type == reference_type:
+                            reference_type_id = rt.reference_type_id
+                    
+                    reference_create = CreateReferenceDTO(reference_name=reference,
+                                                        reference_type_id=reference_type_id)
+                    reference_id = self.reference_repo.create_reference(reference_create).reference_id
+                else:
+                    reference_id = references[0].reference_id
+            
+            quote_create = CreateQuoteDTO(ko_sentence=ko_sentence,
+                        en_sentence=org_sentence,
+                        category_id=category_id,
+                        speaker_id=speaker_id,
+                        reference_id=reference_id)
+            
+            self.quote_repo.create_quote(quote_create)
+                
+        return fail_cnt
