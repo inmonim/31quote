@@ -14,7 +14,7 @@ function UsersCheckCategoryQuote() {
 
   useEffect(() => {
     
-    backendApi.get('/quote/getQuoteByUsersAllCategory')
+    backendApi.get('/quote/category_random')
       .then(response => {
         const quoteData = response.data;
         setQuoteID(quoteData.quote_id)

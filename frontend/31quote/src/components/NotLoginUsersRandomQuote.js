@@ -19,17 +19,16 @@ function NotLoginUsersRandomQuote() {
       return
     }
     
-    backendApi.get('/quote/getAllRandomQuote')
+    backendApi.get('/quote/all_random')
       .then(response => {
         const quoteData = response.data;
+        console.log(response.data)
         setQuoteID(quoteData.quote_id)
-        setKoSentence(quoteData.quote_sentence.ko_sentence)
-        setOrgSentence(quoteData.quote_sentence.org_sentence)
-        setSpeakerName(quoteData.quote_speaker.speaker_name)
-        setSpeakerOrgName(quoteData.quote_speaker.speaker_org_name)
-        setSource(quoteData.quote_source)
-        setSubtext(quoteData.quote_subtext)
-        setCategory(quoteData.quote_category.category)
+        setKoSentence(quoteData.ko_sentence)
+        setOrgSentence(quoteData.org_sentence)
+        setSpeakerName(quoteData.speaker.ko_name)
+        setSpeakerOrgName(quoteData.speaker.org_name)
+        setCategory(quoteData.category.category)
       })
       .catch(error => {
         console.log(error)
