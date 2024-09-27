@@ -7,17 +7,19 @@ from DTO import ResponseQuoteDTO
 
 router = APIRouter()
 
+quote_service = QuoteService()
+
 @router.get("/all_random", status_code=200)
-def get_all_random_quote(db : Session = Depends(get_db)) -> ResponseQuoteDTO:
+async def get_all_random_quote() -> ResponseQuoteDTO:
     
-    random_quote = QuoteService(db).get_all_random_quote()
+    random_quote = await quote_service.get_all_random_quote()
     
     return random_quote
 
 @router.get("/category_random")
-def get_category_random_quote(category_id : int, db : Session = Depends(get_db)) -> ResponseQuoteDTO:
+async def get_category_random_quote(category_id : int) -> ResponseQuoteDTO:
     
-    random_quote = QuoteService(db).get_category_random_quote(category_id)
+    random_quote = await quote_service.get_category_random_quote(category_id)
     
     return random_quote
 
