@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 from fastapi.middleware.cors import CORSMiddleware
 
-from controller import quote_manage_router, quote_router
+from controller import quote_manage_router, quote_router, user_router
 
 app = FastAPI()
 
@@ -16,6 +16,7 @@ app.add_middleware(
 
 app.include_router(quote_manage_router, prefix='/admin', tags=['admin'])
 app.include_router(quote_router, prefix='/quote', tags=['quote'])
+app.include_router(user_router, prefix='/user', tags=['users'])
 
 
 @app.get('/')

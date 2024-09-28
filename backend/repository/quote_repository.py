@@ -1,17 +1,14 @@
-import asyncio
-
 from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 
-from config import session_injection
 from model import Quote, Reference
-from util import dto_to_model
+from util import session_injection, dto_to_model
 from DTO import CreateQuoteDTO
 
 class QuoteRepository:
     
     def __init__(self):
-        print("레포지토리 생성")
+        print("Quote 레포지토리 생성")
         pass
 
     async def get_quote(self, quote_id : int) -> Quote | None:
@@ -51,3 +48,5 @@ class QuoteRepository:
         db.add(quote)
         db.commit()
         return quote
+
+quote_repo = QuoteRepository()

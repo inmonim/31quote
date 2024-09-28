@@ -1,5 +1,4 @@
-from config import session_injection
-from util import dto_to_model
+from util import session_injection, dto_to_model
 
 from model import Reference, ReferenceType
 from DTO import CreateReferenceDTO, CreateReferenceTypeDTO
@@ -42,3 +41,6 @@ class ReferenceRepository:
         db = await session_injection()
         result = db.query(ReferenceType).all()
         return result
+
+
+reference_repo = ReferenceRepository()

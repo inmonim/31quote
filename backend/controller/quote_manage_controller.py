@@ -41,56 +41,56 @@ async def create_reference_type(data : CreateReferenceTypeDTO) -> ResponseRefere
     
 
 @router.get("/quote")
-async def get_quote(quote_id : int, ) -> ResponseQuoteDTO:
+async def get_quote(quote_id : int ) -> ResponseQuoteDTO:
     quote = await quote_manage_service.get_quote(quote_id)
     
     return quote
 
 @router.get("/category")
-async def get_category(category_id : int, ) -> ResponseCategoryDTO:
+async def get_category(category_id : int ) -> ResponseCategoryDTO:
     category = await quote_manage_service.get_category(category_id)
     
     return category
 
 @router.get("/speaker")
-async def get_speaker(speaker_id : int, ) -> ResponseSpeakerDTO:
+async def get_speaker(speaker_id : int ) -> ResponseSpeakerDTO:
     speaker = await quote_manage_service.get_speaker(speaker_id)
     
     return speaker
 
 @router.get("/reference")
-async def get_reference(reference_id : int, ) -> ResponseReferenceDTO:
+async def get_reference(reference_id : int ) -> ResponseReferenceDTO:
     reference = await quote_manage_service.get_reference(reference_id)
     
     return reference
 
 @router.get("/reference_type")
-async def get_reference_type(reference_type_id : int, ) -> ResponseReferenceTypeDTO:
+async def get_reference_type(reference_type_id : int ) -> ResponseReferenceTypeDTO:
     reference_type = await quote_manage_service.get_reference_type(reference_type_id)
     
     return reference_type
 
 
 @router.get("/find_quotes")
-async def find_quote(search_text : str, ) -> list[ResponseQuoteKoSentenceDTO]:
+async def find_quote(search_text : str ) -> list[ResponseQuoteKoSentenceDTO]:
     quotes = await quote_manage_service.find_quote(search_text)
     
     return quotes
 
 @router.get("/find_speakers")
-async def find_speakers(search_text : str, ) -> list[ResponseSpeakerKoNameDTO]:
+async def find_speakers(search_text : str ) -> list[ResponseSpeakerKoNameDTO]:
     speakers = await quote_manage_service.find_speakers(search_text)
     
     return speakers
 
 @router.get("/find_categories")
-async def find_categories(search_text : str, ) -> list[ResponseCategoryDTO]:
+async def find_categories(search_text : str ) -> list[ResponseCategoryDTO]:
     categories = await quote_manage_service.find_categories(search_text)
     
     return categories
 
 @router.get("/find_references")
-async def find_references(search_text : str, ) -> list[ResponseReferenceDTO]:
+async def find_references(search_text : str ) -> list[ResponseReferenceDTO]:
     references = await quote_manage_service.find_references(search_text)
     
     return references
@@ -103,7 +103,7 @@ async def get_all_reference_types() -> list[ResponseReferenceTypeDTO]:
 
 
 @router.post("/input_xlsx")
-async def input_quote_to_xlsx(xlsx_file : UploadFile = File(...), ) -> int:
+async def input_quote_to_xlsx(xlsx_file : UploadFile = File(...) ) -> int:
     
     fail_cnt = await quote_manage_service.input_quote_xlsx(xlsx_file)
     

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from config import session_injection
+from util import session_injection
 from model import Category
 
 from DTO import CreateCategoryDTO
@@ -8,6 +8,7 @@ from DTO import CreateCategoryDTO
 class CategoryRepository:
     
     def __init__(self):
+        print("category repository 생성")
         pass
     
     async def create_category(self, data : CreateCategoryDTO) -> Category:
@@ -28,3 +29,6 @@ class CategoryRepository:
         categories = db.query(Category).filter(Category.category.like(f"%{search_text}%")).all()
         
         return categories
+
+
+category_repo = CategoryRepository()

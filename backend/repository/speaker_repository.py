@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 
-from config import session_injection
-from util import dto_to_model
+from util import session_injection, dto_to_model
 
 from model import Speaker
 from DTO import CreateSpeakerDTO
@@ -29,3 +28,6 @@ class SpeakerRepository:
         result = db.query(Speaker).filter(Speaker.ko_name.like(f"%{search_text}%")).all()
         
         return result
+
+
+speaker_repo = SpeakerRepository()

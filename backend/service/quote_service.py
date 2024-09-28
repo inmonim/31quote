@@ -2,14 +2,14 @@ from random import choice
 
 from fastapi import HTTPException
 
-from repository import QuoteRepository
+from repository import quote_repo
 from DTO import ResponseQuoteDTO
 
 class QuoteService:
     
     def __init__(self):
         print("서비스 생성")
-        self.quote_repo = QuoteRepository()
+        self.quote_repo = quote_repo
         
     
     async def get_all_random_quote(self) -> ResponseQuoteDTO:
