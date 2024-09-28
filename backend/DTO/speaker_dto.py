@@ -1,9 +1,4 @@
-from typing import Optional
 from pydantic import BaseModel
-
-from util import model_to_dto
-
-from model import Speaker
 
 class CreateSpeakerDTO(BaseModel):
     

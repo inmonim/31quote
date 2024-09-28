@@ -1,7 +1,5 @@
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy.orm import Session
 
-from config import get_db
 from service import QuoteService
 from DTO import ResponseQuoteDTO
 
@@ -24,8 +22,8 @@ async def get_category_random_quote(category_id : int) -> ResponseQuoteDTO:
     return random_quote
 
 @router.get("/category_list_random")
-def get_category_list_random_quote(category_ids : list[int] = Query(None), db : Session = Depends(get_db)) -> ResponseQuoteDTO:
+async def get_category_list_random_quote(category_ids : list[int] = Query(None)) -> ResponseQuoteDTO:
     
-    random_quote = QuoteService(db).get_category_list_random_quote(category_ids)
+    random_quote = await quote_service.get_category_list_random_quote(category_ids)
     
     return random_quote

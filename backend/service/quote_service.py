@@ -31,9 +31,10 @@ class QuoteService:
         return quote_response
     
     
-    def get_category_list_random_quote(self, category_ids : list[int]) -> ResponseQuoteDTO:
+    async def get_category_list_random_quote(self, category_ids : list[int]) -> ResponseQuoteDTO:
         category_id = choice(category_ids)
-        quote = self.quote_repo.get_category_random_quote(category_id)
+        
+        quote = await self.quote_repo.get_category_random_quote(category_id)
         
         quote_response = ResponseQuoteDTO.model_validate(quote)
         

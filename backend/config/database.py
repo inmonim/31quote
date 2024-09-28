@@ -19,3 +19,6 @@ async def get_db():
     finally:
         print("세션 종료")
         db.close()
+
+async def session_injection():
+    return await anext(get_db())

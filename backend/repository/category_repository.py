@@ -1,26 +1,30 @@
 from sqlalchemy.orm import Session
 
+from config import session_injection
 from model import Category
 
 from DTO import CreateCategoryDTO
 
 class CategoryRepository:
     
-    def __init__(self, db : Session):
-        self.db = db
+    def __init__(self):
+        pass
     
-    def create_category(self, data : CreateCategoryDTO) -> Category:
+    async def create_category(self, data : CreateCategoryDTO) -> Category:
+        db = await session_injection()
         category = Category(category_id = data.categroy_id,
                             category = data.category)
-        self.db.add(category)
-        self.db.commit()
+        db.add(category)
+        db.commit()
         return category
     
-    def get_category(self, category_id : int) -> Category | None:
-        category = self.db.query(Category).get(category_id)
+    async def get_category(self, category_id : int) -> Category | None:
+        db = await session_injection()
+        category = db.query(Category).get(category_id)
         return category
     
-    def find_categories(self, search_text : str) -> list[Category]:
-        categories = self.db.query(Category).filter(Category.category.like(f"%{search_text}%")).all()
+    async def find_categories(self, search_text : str) -> list[Category]:
+        db = await session_injection()
+        categories = db.query(Category).filter(Category.category.like(f"%{search_text}%")).all()
         
         return categories

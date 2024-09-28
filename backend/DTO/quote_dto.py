@@ -1,9 +1,5 @@
-from typing import Optional
-
 from pydantic import BaseModel
 
-from util import model_to_dto
-from model import Quote
 from DTO import ResponseCategoryDTO, ResponseSpeakerDTO, ResponseReferenceDTO, ResponseReferenceTypeDTO
 
 class CreateQuoteDTO(BaseModel):

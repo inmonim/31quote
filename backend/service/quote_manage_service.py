@@ -9,72 +9,72 @@ from DTO import ResponseSpeakerDTO, ResponseCategoryDTO, ResponseQuoteDTO, Respo
 
 class QuoteManageService:
     
-    def __init__(self, db: Session):
-        self.speaker_repo = SpeakerRepository(db)
-        self.category_repo = CategoryRepository(db)
-        self.quote_repo = QuoteRepository(db)
-        self.reference_repo = ReferenceRepository(db)
+    def __init__(self):
+        self.speaker_repo = SpeakerRepository()
+        self.category_repo = CategoryRepository()
+        self.quote_repo = QuoteRepository()
+        self.reference_repo = ReferenceRepository()
     
     
-    def create_speaker(self, data : CreateSpeakerDTO) -> ResponseSpeakerDTO:
+    async def create_speaker(self, data : CreateSpeakerDTO) -> ResponseSpeakerDTO:
         speaker = self.speaker_repo.create_speaker(data)
         speaker_response = ResponseSpeakerDTO.model_validate(speaker)
         return speaker_response
     
     
-    def create_category(self, data : CreateCategoryDTO) -> ResponseCategoryDTO:
+    async def create_category(self, data : CreateCategoryDTO) -> ResponseCategoryDTO:
         category = self.category_repo.create_category(data)
         category_response = ResponseCategoryDTO.model_validate(category)
         return category_response
     
     
-    def create_quote(self, data : CreateQuoteDTO) -> ResponseQuoteDTO:
+    async def create_quote(self, data : CreateQuoteDTO) -> ResponseQuoteDTO:
         quote = self.quote_repo.create_quote(data)
         quote_response = ResponseQuoteDTO.model_validate(quote)
         return quote_response
     
     
-    def create_reference(self, data : CreateReferenceDTO) -> ResponseReferenceDTO:
+    async def create_reference(self, data : CreateReferenceDTO) -> ResponseReferenceDTO:
         reference = self.reference_repo.create_reference(data)
         reference_response = ResponseReferenceDTO.model_validate(reference)
         return reference_response
     
     
-    def create_reference_type(self, data : CreateReferenceTypeDTO) -> ResponseReferenceTypeDTO:
+    async def create_reference_type(self, data : CreateReferenceTypeDTO) -> ResponseReferenceTypeDTO:
         reference_type = self.reference_repo.create_reference_type(data)
         reference_type_response = ResponseReferenceTypeDTO.model_validate(reference_type)
         return reference_type_response
     
     
-    def get_quote(self, quote_id : int) -> ResponseQuoteDTO:
+    async def get_quote(self, quote_id : int) -> ResponseQuoteDTO:
         quote = self.quote_repo.get_quote(quote_id)
         quote_response = ResponseQuoteDTO.model_validate(quote)
         return quote_response
     
     
-    def get_category(self, category_id : int) -> ResponseCategoryDTO:
+    async def get_category(self, category_id : int) -> ResponseCategoryDTO:
         category = self.category_repo.get_category(category_id)
         category_dto = ResponseCategoryDTO.model_validate(category)
         return category_dto
     
     
-    def get_speaker(self, speaker_id : int) -> ResponseSpeakerDTO:
+    async def get_speaker(self, speaker_id : int) -> ResponseSpeakerDTO:
         speaker = self.speaker_repo.get_speaker(speaker_id)
         speaker_dto = ResponseSpeakerDTO.model_validate(speaker)
         return speaker_dto
     
-    def get_reference(self, reference_id : int) -> ResponseReferenceDTO:
+    async def get_reference(self, reference_id : int) -> ResponseReferenceDTO:
         reference = self.reference_repo.get_reference(reference_id)
         reference_response = ResponseReferenceDTO.model_validate(reference)
         return reference_response
 
-    def get_reference_type(self, reference_type_id : int) -> ResponseReferenceTypeDTO:
+    async def get_reference_type(self, reference_type_id : int) -> ResponseReferenceTypeDTO:
         reference_type = self.reference_repo.get_reference_type(reference_type_id)
         reference_type_response = ResponseReferenceTypeDTO.model_validate(reference_type)
         return reference_type_response
     
     
-    def find_quote(self, search_text : str) -> list[ResponseQuoteKoSentenceDTO]:
+    async def find_quote(self, search_text : str) -> list[ResponseQuoteKoSentenceDTO]:
         result = self.quote_repo.find_quote(search_text)
         
         if not result:
@@ -83,7 +83,7 @@ class QuoteManageService:
         quotes = [ResponseQuoteKoSentenceDTO.model_validate(quote) for quote in result]
         return quotes
     
-    def find_speakers(self, search_text : str) -> list[ResponseSpeakerKoNameDTO]:
+    async def find_speakers(self, search_text : str) -> list[ResponseSpeakerKoNameDTO]:
         result = self.speaker_repo.find_speaker(search_text)
         
         if not result:
@@ -93,7 +93,7 @@ class QuoteManageService:
         
         return speakers
     
-    def find_categories(self, search_text : str) -> list[ResponseCategoryDTO]:
+    async def find_categories(self, search_text : str) -> list[ResponseCategoryDTO]:
         result = self.category_repo.find_categories(search_text)
         
         if not result:
@@ -103,7 +103,7 @@ class QuoteManageService:
         
         return categories
     
-    def find_references(self, search_text : str) -> list[ResponseReferenceDTO]:
+    async def find_references(self, search_text : str) -> list[ResponseReferenceDTO]:
         result = self.reference_repo.find_references(search_text)
         
         if not result:
@@ -113,7 +113,7 @@ class QuoteManageService:
         
         return references
     
-    def get_all_reference_types(self) -> list[ResponseReferenceTypeDTO]:
+    async def get_all_reference_types(self) -> list[ResponseReferenceTypeDTO]:
         result = self.reference_repo.get_all_reference_types()
         
         reference_types = [ResponseReferenceTypeDTO.model_validate(reference_type) for reference_type in result]

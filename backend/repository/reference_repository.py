@@ -1,5 +1,4 @@
-from sqlalchemy.orm import Session
-
+from config import session_injection
 from util import dto_to_model
 
 from model import Reference, ReferenceType
@@ -7,33 +6,39 @@ from DTO import CreateReferenceDTO, CreateReferenceTypeDTO
 
 class ReferenceRepository:
     
-    def __init__(self, db : Session):
-        self.db = db
+    def __init__(self):
+        pass
     
-    def create_reference_type(self, data : CreateReferenceTypeDTO) -> ReferenceType:
+    async def create_reference_type(self, data : CreateReferenceTypeDTO) -> ReferenceType:
+        db = await session_injection()
         reference_type = dto_to_model(data, ReferenceType)
-        self.db.add(reference_type)
-        self.db.commit()
+        db.add(reference_type)
+        db.commit()
         return reference_type
     
-    def create_reference(self, data : CreateReferenceDTO) -> Reference:
+    async def create_reference(self, data : CreateReferenceDTO) -> Reference:
+        db = await session_injection()
         reference = dto_to_model(data, Reference)
-        self.db.add(reference)
-        self.db.commit()
+        db.add(reference)
+        db.commit()
         return reference
     
-    def get_reference_type(self, reference_type_id : int) -> ReferenceType | None:
-        reference_type = self.db.query(ReferenceType).get(reference_type_id)
+    async def get_reference_type(self, reference_type_id : int) -> ReferenceType | None:
+        db = await session_injection()
+        reference_type = db.query(ReferenceType).get(reference_type_id)
         return reference_type
     
-    def get_reference(self, reference_id : int) -> Reference | None:
-        reference = self.db.query(Reference).get(reference_id)
+    async def get_reference(self, reference_id : int) -> Reference | None:
+        db = await session_injection()
+        reference = db.query(Reference).get(reference_id)
         return reference
     
-    def find_references(self, search_text : str) -> list[Reference]:
-        result = self.db.query(Reference).filter(Reference.reference_name.like(f"%{search_text}%")).all()
+    async def find_references(self, search_text : str) -> list[Reference]:
+        db = await session_injection()
+        result = db.query(Reference).filter(Reference.reference_name.like(f"%{search_text}%")).all()
         return result
     
-    def get_all_reference_types(self) -> list[ReferenceType]:
-        result = self.db.query(ReferenceType).all()
+    async def get_all_reference_types(self) -> list[ReferenceType]:
+        db = await session_injection()
+        result = db.query(ReferenceType).all()
         return result
