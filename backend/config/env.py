@@ -14,6 +14,7 @@ else:
     DB_TABLE = env.get("DB_TABLE")
     DB_PORT = env.get("DB_PORT")
     
+    ADMIN_ID = env.get('ADMIN_ID')
     ALGORITHM = env.get('ALGORITHM')
     SECRET_KEY = env.get('SECRET_KEY')
     ACCESS_TOKEN_EXPIRE_MINUTES = env.get('ACCESS_TOKEN_EXPIRE_MINUTES')

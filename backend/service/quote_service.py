@@ -8,7 +8,7 @@ from DTO import ResponseQuoteDTO
 class QuoteService:
     
     def __init__(self):
-        print("서비스 생성")
+        print("Quote 서비스 생성")
         self.quote_repo = quote_repo
         
     

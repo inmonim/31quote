@@ -10,7 +10,7 @@ class UserRepository:
     def __init__(self):
         pass
     
-    async def create_user(self, db: Session, user_data : OAuth2PasswordRequestForm, nickname: str) -> int:
+    async def create_user(self, db: Session, user_data : OAuth2PasswordRequestForm, nickname: str) -> bool:
         user = User(nickname = nickname,
                     login_id=user_data.username,
                     password=user_data.password,
@@ -18,7 +18,7 @@ class UserRepository:
         
         db.add(user)
         db.commit()
-        return user.user_id
+        return True
     
     async def get_user_by_login_id(self, db : Session, login_id: str) -> User | None:
         user = db.query(User).filter(User.login_id == login_id).first()

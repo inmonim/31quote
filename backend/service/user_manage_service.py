@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from auth import create_access_token, create_refresh_token
 from util import session_injection, gen_random_nickname
 from repository import user_repo
-from DTO import TokenResponseDTO
+from DTO import ResponseNicknameDTO, ResponseTokenDTO
 
 class UserManageService:
     
@@ -16,22 +16,27 @@ class UserManageService:
         self.user_repo = user_repo
     
     
-    async def create_user(self, user_data : OAuth2PasswordRequestForm) -> int:
+    async def create_user(self, user_data : OAuth2PasswordRequestForm) -> ResponseNicknameDTO:
         db = await session_injection()
         
         user = await self.user_repo.get_user_by_login_id(db, user_data.username)
         
         if user:
-            raise HTTPException(409, "duplicate username")
+            raise HTTPException(409, "duplicate user id")
         
         user_data.password = self.pwd_context.hash(user_data.password)
         
-        user_id = await self.user_repo.create_user(db, user_data, gen_random_nickname())
+        nickname = gen_random_nickname()
         
-        return user_id
+        is_created = await self.user_repo.create_user(db, user_data, nickname)
+        
+        if not is_created:
+            raise HTTPException(400, "Failed create user")
+        
+        return ResponseNicknameDTO(nickname=nickname)
     
     
-    async def login(self, user_data : OAuth2PasswordRequestForm) -> TokenResponseDTO:
+    async def login(self, user_data : OAuth2PasswordRequestForm) -> ResponseTokenDTO:
         db = await session_injection()
         
         login_id, password = user_data.username, user_data.password
@@ -43,7 +48,7 @@ class UserManageService:
         access_token = create_access_token({"sub": str(user.user_id), "role": str(user.role_id)})
         refresh_token = create_refresh_token({"sub": str(user.user_id), "role": str(user.role_id)})
         
-        token_response = TokenResponseDTO(user_name=user.nickname,
+        token_response = ResponseTokenDTO(user_name=user.nickname,
                                           access_token=access_token,
                                           refresh_token=refresh_token)
         

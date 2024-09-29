@@ -1,5 +1,5 @@
 from sqlalchemy import func
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import joinedload
 
 from model import Quote, Reference
 from util import session_injection, dto_to_model
