@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, UploadFile, File
 
 from service import QuoteManageService
-
+from auth import get_current_user
 from DTO import CreateCategoryDTO, CreateQuoteDTO, CreateSpeakerDTO, CreateReferenceDTO, CreateReferenceTypeDTO
 from DTO import ResponseCategoryDTO, ResponseQuoteDTO, ResponseReferenceDTO, ResponseReferenceTypeDTO, ResponseSpeakerDTO, ResponseQuoteKoSentenceDTO, ResponseSpeakerKoNameDTO
 
@@ -10,7 +10,7 @@ router = APIRouter()
 quote_manage_service = QuoteManageService()
 
 @router.post("/category", status_code=201)
-async def create_category(data : CreateCategoryDTO) -> ResponseCategoryDTO:
+async def create_category(data : CreateCategoryDTO, user : int = Depends(get_current_user)) -> ResponseCategoryDTO:
     new_category = await quote_manage_service.create_category(data)
     
     return new_category
@@ -41,13 +41,13 @@ async def create_reference_type(data : CreateReferenceTypeDTO) -> ResponseRefere
     
 
 @router.get("/quote")
-async def get_quote(quote_id : int ) -> ResponseQuoteDTO:
+async def get_quote(quote_id : int) -> ResponseQuoteDTO:
     quote = await quote_manage_service.get_quote(quote_id)
     
     return quote
 
 @router.get("/category")
-async def get_category(category_id : int ) -> ResponseCategoryDTO:
+async def get_category(category_id : int, user : int = Depends(get_current_user)) -> ResponseCategoryDTO:
     category = await quote_manage_service.get_category(category_id)
     
     return category

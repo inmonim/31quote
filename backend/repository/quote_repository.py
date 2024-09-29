@@ -5,6 +5,8 @@ from model import Quote, Reference
 from util import session_injection, dto_to_model
 from DTO import CreateQuoteDTO
 
+quote_reo = None
+
 class QuoteRepository:
     
     def __init__(self):
@@ -49,4 +51,5 @@ class QuoteRepository:
         db.commit()
         return quote
 
-quote_repo = QuoteRepository()
+if __name__ != "__main__":
+    quote_repo = QuoteRepository()
