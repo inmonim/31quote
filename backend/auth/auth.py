@@ -4,7 +4,7 @@ from fastapi import HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 
-from config import ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY
+from config import ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_MINUTES, SECRET_KEY
 
 _oauth2_scheme = OAuth2PasswordBearer(tokenUrl="user/login")
 
@@ -14,19 +14,31 @@ _credentials_exception = HTTPException(
     headers={"WWW-Authenticate": "Bearer"},
 )
 
+def convert_to_int(value: str | None):
+    if value is None:
+        raise ValueError("None 값은 숫자로 변환할 수 없습니다.")
+    return int(value)
+
+access_token_expire_minutes = convert_to_int(ACCESS_TOKEN_EXPIRE_MINUTES)
+refresh_token_expire_minutes = convert_to_int(REFRESH_TOKEN_EXPIRE_MINUTES)
+
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
-    expire = datetime.now() + timedelta(minutes=15)
+    expire = datetime.now() + timedelta(minutes=access_token_expire_minutes)
     to_encode["exp"] = expire
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 def create_refresh_token(data: dict) -> str:
     to_encode = data.copy()
-    expire = datetime.now() + timedelta(minutes=1440)
+    expire = datetime.now() + timedelta(minutes=refresh_token_expire_minutes)
     to_encode["exp"] = expire
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+
+
+
 
 async def get_current_user(token: str = Depends(_oauth2_scheme)) -> tuple[int, int]:
     try:
