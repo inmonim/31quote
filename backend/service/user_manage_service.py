@@ -3,10 +3,10 @@ from passlib.context import CryptContext
 from fastapi import HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
-from auth import create_access_token, create_refresh_token
-from util import session_injection, gen_random_nickname
+from auth import create_access_token, create_refresh_token, get_current_user
+from util import session_injection, gen_random_nickname, r
 from repository import user_repo
-from DTO import ResponseNicknameDTO, ResponseTokenDTO
+from DTO import ResponseNicknameDTO, ResponseTokenDTO, RequestTokenDTO
 
 class UserManageService:
     
@@ -53,3 +53,25 @@ class UserManageService:
                                           refresh_token=refresh_token)
         
         return token_response
+    
+    
+    async def token_refresh(self, tokens : RequestTokenDTO, user):
+        
+        user_id, role_id = user
+        
+        access_token = create_access_token({"sub": str(user_id), "role": str(role_id)})
+        refresh_token = create_refresh_token({"sub": str(user_id), "role": str(role_id)})
+        
+        token_response = ResponseTokenDTO(access_token=access_token,
+                                          refresh_token=refresh_token)
+        
+        if not await r.add_blacklist(tokens):
+            raise HTTPException(500, "Redis Error")
+        
+        return token_response
+    
+    
+    async def logout(self, tokens : RequestTokenDTO):
+
+        if not await r.add_blacklist(tokens):
+            raise HTTPException(500, "Redis Error")

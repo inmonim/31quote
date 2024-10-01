@@ -1,10 +1,15 @@
 from datetime import datetime, timezone, timedelta
+import time
+import pytz
 
 from fastapi import HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 
+from util import r
 from config import ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_MINUTES, SECRET_KEY
+
+_tz = pytz.timezone('Asia/Seoul')
 
 _oauth2_scheme = OAuth2PasswordBearer(tokenUrl="user/login")
 
@@ -14,35 +19,32 @@ _credentials_exception = HTTPException(
     headers={"WWW-Authenticate": "Bearer"},
 )
 
-def convert_to_int(value: str | None):
-    if value is None:
-        raise ValueError("None 값은 숫자로 변환할 수 없습니다.")
-    return int(value)
-
-access_token_expire_minutes = convert_to_int(ACCESS_TOKEN_EXPIRE_MINUTES)
-refresh_token_expire_minutes = convert_to_int(REFRESH_TOKEN_EXPIRE_MINUTES)
-
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
-    expire = datetime.now() + timedelta(minutes=access_token_expire_minutes)
+    expire = datetime.now(_tz) + timedelta(seconds=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode["exp"] = expire
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 def create_refresh_token(data: dict) -> str:
     to_encode = data.copy()
-    expire = datetime.now() + timedelta(minutes=refresh_token_expire_minutes)
+    expire = datetime.now(_tz) + timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)
     to_encode["exp"] = expire
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 
-
-
-
 async def get_current_user(token: str = Depends(_oauth2_scheme)) -> tuple[int, int]:
+    if await r.match_token(token):
+        raise _credentials_exception
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        exp = payload.get("exp")
+        current_now = time.time()
+        
+        if exp < current_now:
+            raise _credentials_exception
+        
         user_id = int(payload.get("sub"))
         role_id = payload.get("role")
         if not user_id and not role_id:
