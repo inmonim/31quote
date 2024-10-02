@@ -3,7 +3,7 @@ from passlib.context import CryptContext
 from fastapi import HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
-from auth import create_access_token, create_refresh_token, get_current_user
+from auth import create_access_token, create_refresh_token
 from util import session_injection, gen_random_nickname, r
 from repository import user_repo
 from DTO import ResponseNicknameDTO, ResponseTokenDTO, RequestTokenDTO
