@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 class CreateReferenceTypeDTO(BaseModel):
     
@@ -18,8 +18,7 @@ class ResponseReferenceTypeDTO(BaseModel):
     reference_type_id : int
     reference_type : str
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ResponseReferenceDTO(BaseModel):
@@ -29,5 +28,4 @@ class ResponseReferenceDTO(BaseModel):
     year : int | None = None
     reference_type : ResponseReferenceTypeDTO
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

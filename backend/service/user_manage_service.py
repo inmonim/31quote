@@ -1,4 +1,4 @@
-from passlib.context import CryptContext
+from passlib.hash import bcrypt
 
 from fastapi import HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
@@ -11,8 +11,6 @@ from DTO import ResponseNicknameDTO, ResponseTokenDTO, RequestTokenDTO
 class UserManageService:
     
     def __init__(self):
-        self.pwd_context = CryptContext(schemes=["bcrypt"])
-        
         self.user_repo = user_repo
     
     
@@ -24,7 +22,7 @@ class UserManageService:
         if user:
             raise HTTPException(409, "duplicate user id")
         
-        user_data.password = self.pwd_context.hash(user_data.password)
+        user_data.password = bcrypt.hash(user_data.password)
         
         nickname = gen_random_nickname()
         
@@ -42,7 +40,7 @@ class UserManageService:
         login_id, password = user_data.username, user_data.password
         user = await self.user_repo.get_user_by_login_id(db, login_id)
         
-        if not user or self.pwd_context.verify(password, user.password) == False:
+        if not user or bcrypt.verify(password, user.password) == False:
             raise HTTPException(404, "User Not Found")
         
         access_token = create_access_token({"sub": str(user.user_id), "role": str(user.role_id)})

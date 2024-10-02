@@ -27,6 +27,7 @@ class QuoteService:
     
     async def get_category_random_quote(self, category_id : int) -> ResponseQuoteDTO:
         db = await session_injection()
+        
         quote = await self.quote_repo.get_category_random_quote(db, category_id)
         
         quote_response = ResponseQuoteDTO.model_validate(quote)

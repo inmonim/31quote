@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 class CreateSpeakerDTO(BaseModel):
     
@@ -18,13 +18,11 @@ class ResponseSpeakerDTO(BaseModel):
     born_date : str | None = None
     death_date : str | None = None
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
         
 class ResponseSpeakerKoNameDTO(BaseModel):
     
     speaker_id : int
     ko_name : str
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

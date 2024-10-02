@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from DTO import ResponseCategoryDTO, ResponseSpeakerDTO, ResponseReferenceDTO, ResponseReferenceTypeDTO
 
@@ -22,8 +22,7 @@ class ResponseQuoteDTO(BaseModel):
     speaker : ResponseSpeakerDTO | None = None
     reference : ResponseReferenceDTO | None = None
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
         
         
 class ResponseQuoteKoSentenceDTO(BaseModel):
@@ -31,5 +30,4 @@ class ResponseQuoteKoSentenceDTO(BaseModel):
     quote_id : int
     ko_sentence : str
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
