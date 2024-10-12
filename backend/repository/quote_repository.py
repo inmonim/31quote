@@ -10,16 +10,17 @@ quote_reo = None
 class QuoteRepository:
     
     def __init__(self):
-        print("Quote 레포지토리 생성")
+        print("Quote Repository 생성")
         pass
 
-    async def get_quote(self, db : Session, quote_id : int) -> Quote | None:
+    async def get_quote(self, quote_id : int, db : Session) -> Quote | None:
         quote = db.query(Quote).options(joinedload(Quote.category),
                                              joinedload(Quote.speaker),
                                              joinedload(Quote.reference).joinedload(Reference.reference_type),
                                              ).get(quote_id)
     
         return quote
+    
     
     async def get_all_random_quote(self, db : Session) -> Quote | None:
         quote = db.query(Quote).options(joinedload(Quote.category),
@@ -28,7 +29,8 @@ class QuoteRepository:
                                              ).order_by(func.random()).first()
         return quote
     
-    async def get_category_random_quote(self, db : Session, category_id) -> Quote | None:
+    
+    async def get_category_random_quote(self, category_id, db : Session) -> Quote | None:
         quote = db.query(Quote).filter(Quote.category_id == category_id
                                             ).options(joinedload(Quote.category),
                                                       joinedload(Quote.speaker),
@@ -36,15 +38,23 @@ class QuoteRepository:
                                                       ).order_by(func.random()).first()
         return quote
     
-    async def find_quote(self, db : Session, search_text : str) -> list[Quote] | None:
+    
+    async def find_quote(self, search_text : str, db : Session) -> list[Quote] | None:
         result = db.query(Quote).filter(Quote.ko_sentence.like(f"%{search_text}%")).all()
         return result
     
-    async def create_quote(self, db : Session, data : CreateQuoteDTO) -> Quote:
+    
+    async def create_quote(self, data : CreateQuoteDTO, db : Session) -> Quote:
         quote = dto_to_model(data, Quote)
         db.add(quote)
         db.commit()
         return quote
+    
+    
+    async def get_all_quote(self, db : Session) -> list[Quote]:
+        quote = db.query(Quote).all()
+        return quote
+
 
 if __name__ != "__main__":
     quote_repo = QuoteRepository()

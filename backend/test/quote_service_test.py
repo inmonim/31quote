@@ -29,7 +29,7 @@ async def test_get_category_random_quote(mock_repo):
     category_id = 1
     
     # 테스트 대상 메서드 호출
-    result = await service.get_category_random_quote(category_id)
+    result = await service.get_category_random_quote(category_id, None)
     
     # 결과 검증 (ResponseQuoteDTO로 변환된 데이터)
     assert isinstance(result, ResponseQuoteDTO)

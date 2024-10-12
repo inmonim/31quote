@@ -2,22 +2,23 @@ from passlib.hash import bcrypt
 
 from fastapi import HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
 
 from auth import create_access_token, create_refresh_token
-from util import session_injection, gen_random_nickname, r
+from util import gen_random_nickname, r
 from repository import user_repo
 from DTO import ResponseNicknameDTO, ResponseTokenDTO, RequestTokenDTO
 
 class UserManageService:
     
     def __init__(self):
+        print("User manage Service 생성")
         self.user_repo = user_repo
     
     
-    async def create_user(self, user_data : OAuth2PasswordRequestForm) -> ResponseNicknameDTO:
-        db = await session_injection()
+    async def create_user(self, user_data : OAuth2PasswordRequestForm, db : Session) -> ResponseNicknameDTO:
         
-        user = await self.user_repo.get_user_by_login_id(db, user_data.username)
+        user = await self.user_repo.get_user_by_login_id(user_data.username, db)
         
         if user:
             raise HTTPException(409, "duplicate user id")
@@ -26,7 +27,7 @@ class UserManageService:
         
         nickname = gen_random_nickname()
         
-        is_created = await self.user_repo.create_user(db, user_data, nickname)
+        is_created = await self.user_repo.create_user(user_data, nickname, db)
         
         if not is_created:
             raise HTTPException(400, "Failed create user")
@@ -34,11 +35,11 @@ class UserManageService:
         return ResponseNicknameDTO(nickname=nickname)
     
     
-    async def login(self, user_data : OAuth2PasswordRequestForm) -> ResponseTokenDTO:
-        db = await session_injection()
+    async def login(self, user_data : OAuth2PasswordRequestForm, db : Session) -> ResponseTokenDTO:
+
         
         login_id, password = user_data.username, user_data.password
-        user = await self.user_repo.get_user_by_login_id(db, login_id)
+        user = await self.user_repo.get_user_by_login_id(login_id, db)
         
         if not user or bcrypt.verify(password, user.password) == False:
             raise HTTPException(404, "User Not Found")

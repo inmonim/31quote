@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, Header
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
 
+from util import get_db
 from DTO import ResponseNicknameDTO, ResponseTokenDTO, RequestTokenDTO
 
 from auth import get_current_user
@@ -11,17 +13,17 @@ router = APIRouter()
 user_manage_service = UserManageService()
 
 @router.post('/', status_code=201, summary="유저 생성")
-async def create_user(user_data : OAuth2PasswordRequestForm = Depends()) -> ResponseNicknameDTO:
+async def create_user(user_data : OAuth2PasswordRequestForm = Depends(), db : Session = Depends(get_db)) -> ResponseNicknameDTO:
     
-    nickname = await user_manage_service.create_user(user_data)
+    nickname = await user_manage_service.create_user(user_data, db)
     
     return nickname
 
 
 @router.post('/login', status_code=200, summary="로그인")
-async def login(user_data : OAuth2PasswordRequestForm = Depends()) -> ResponseTokenDTO:
+async def login(user_data : OAuth2PasswordRequestForm = Depends(), db : Session = Depends(get_db)) -> ResponseTokenDTO:
     
-    token_response = await user_manage_service.login(user_data)
+    token_response = await user_manage_service.login(user_data, db)
     
     return token_response
 
