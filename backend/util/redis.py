@@ -1,4 +1,4 @@
-import redis
+import redis.asyncio as aioredis
 
 from DTO import RequestTokenDTO
 from config import REDIS_DB, REDIS_HOST, REDIS_PORT, REFRESH_TOKEN_EXPIRE_MINUTES, ACCESS_TOKEN_EXPIRE_MINUTES
@@ -11,15 +11,15 @@ def convert_to_int(value: str | None):
 class _R:
     
     def __init__(self):
-        self.__r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)
+        self.__r = aioredis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)
         print("Redis 연결 성공")
 
     async def add_blacklist(self, tokens : RequestTokenDTO) -> bool:
         
         try:
             if tokens.access_token:
-                self.__r.set(tokens.access_token, "blacklist", ex = ACCESS_TOKEN_EXPIRE_MINUTES)
-            self.__r.set(tokens.refresh_token, "blacklist", ex = REFRESH_TOKEN_EXPIRE_MINUTES)
+                await self.__r.set(tokens.access_token, "blacklist", ex = ACCESS_TOKEN_EXPIRE_MINUTES)
+            await self.__r.set(tokens.refresh_token, "blacklist", ex = REFRESH_TOKEN_EXPIRE_MINUTES)
         except:
             return False
         
@@ -27,7 +27,7 @@ class _R:
     
     async def match_token(self, token : str) -> bool:
         
-        if self.__r.get(token):
+        if await self.__r.get(token):
             return True
         
         return False
