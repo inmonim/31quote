@@ -26,6 +26,11 @@ class SpeakerRepository:
         result = db.query(Speaker).filter(Speaker.ko_name.like(f"%{search_text}%")).all()
         
         return result
+    
+    async def get_all_speaker(self, db: Session) -> list[Speaker]:
+        speakers = db.query(Speaker).all()
+        
+        return speakers
 
 
 speaker_repo = SpeakerRepository()

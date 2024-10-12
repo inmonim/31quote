@@ -35,6 +35,10 @@ class ReferenceRepository:
         result = db.query(Reference).filter(Reference.reference_name.like(f"%{search_text}%")).all()
         return result
     
+    async def get_all_reference(self, db: Session) -> list[Reference]:
+        referencies = db.query(Reference).all()
+        return referencies
+    
     async def get_all_reference_types(self, db: Session) -> list[ReferenceType]:
         result = db.query(ReferenceType).all()
         return result

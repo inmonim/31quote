@@ -52,7 +52,10 @@ class QuoteRepository:
     
     
     async def get_all_quote(self, db : Session) -> list[Quote]:
-        quote = db.query(Quote).all()
+        quote = db.query(Quote).options(joinedload(Quote.category),
+                                             joinedload(Quote.speaker),
+                                             joinedload(Quote.reference).joinedload(Reference.reference_type),
+                                             ).all()
         return quote
 
 

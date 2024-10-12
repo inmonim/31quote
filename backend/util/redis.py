@@ -1,6 +1,8 @@
+import random
+import json
 import redis.asyncio as aioredis
 
-from DTO import RequestTokenDTO
+from DTO import RequestTokenDTO, ResponseQuoteDTO
 from config import REDIS_DB, REDIS_HOST, REDIS_PORT, REFRESH_TOKEN_EXPIRE_MINUTES, ACCESS_TOKEN_EXPIRE_MINUTES
 
 def convert_to_int(value: str | None):
@@ -31,6 +33,52 @@ class _R:
             return True
         
         return False
+    
+    
+    async def add_category_id_to_quote_id(self, category_id : int, quote_ids : list[int]):
+        """
+        c_10 : [q_1, q_2, q_3] 형식으로 데이터 저장
+        
+        카테고리마다 가지고 있는 quote의 id를 찾기 위해 활용
+        """
+        category_key = f"c_{category_id}"
+        quote_values = [f"q_{quote_id}" for quote_id in quote_ids]
+        await self.__r.rpush(category_key, *quote_values)
+    
 
+    async def add_quote_id_to_quote(self, quote_id : int, quote_data : json):
+        """
+        q_1 : {"quote_id" : 1, "ko_sentence" : "예시"...} 형식으로 데이터 저장
+        """
+        quote_key = f"q_{quote_id}"
+        await self.__r.set(quote_key, quote_data)
+
+
+    async def get_quote_by_category(self, category_id : int):
+        """
+        category_id 기반으로 하위 quote_id list의 길이를 구한 뒤,
+        
+        랜덤으로 한 개의 idx(quote_id)를 뽑음
+    
+        이를 통해 다시 quote를 조회하여 반환함
+        """
+        category_key = f"c_{category_id}"
+        
+        c_len = await self.__r.llen(category_key)
+        random_idx = random.randint(0, c_len-1)
+        random_quote_id = await self.__r.lindex(category_key, random_idx)
+        
+        quote_raw = await self.__r.get(random_quote_id)
+        quote = ResponseQuoteDTO.model_validate_json(quote_raw)
+        
+        return quote
+    
+    
+    async def flush_db(self):
+        try:
+            await self.__r.flushdb()
+            return True
+        except:
+            return False
 
 r = _R()
