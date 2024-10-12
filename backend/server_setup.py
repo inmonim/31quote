@@ -26,6 +26,9 @@ class ServerSetup:
         category_list = await category_repo.get_all_category(db)
         category_dict = {int(category.category_id) : [] for category in category_list}
         
+        # set category len
+        await r.add_category_range(len(category_list))
+        
         quote_list = await quote_repo.get_all_quote(db)
         quote_dto_list = [ResponseQuoteDTO.model_validate(quote) for quote in quote_list]
         
@@ -43,5 +46,6 @@ class ServerSetup:
         
         # test
         x = await r.get_quote_by_category(1)
+        c = await r.get_category_id_range()
         
         return True

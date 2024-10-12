@@ -74,6 +74,17 @@ class _R:
         return quote
     
     
+    async def add_category_range(self, c_len):
+        await self.__r.set("c_len", c_len)
+    
+    async def get_category_id_range(self) -> int:
+        """
+        category_id의 범위를 가져옴
+        """
+        c_len = await self.__r.get("c_len")
+        
+        return int(c_len)
+    
     async def flush_db(self):
         try:
             await self.__r.flushdb()
