@@ -3,7 +3,7 @@
 """
 from .base import Base
 from .category import Category
-from .speaker import Speaker
+from .speaker import Speaker, SpeakerCareer
 from .reference import Reference, ReferenceType
 from .quote import Quote
 from .user import User, Role
