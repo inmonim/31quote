@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session  # ORM 세션
 from config import get_db  # 데이터베이스 연결 함수
 from model import Quote, Speaker, Category, Reference, SpeakerCareer, ReferenceType  # ORM 모델
 
-page = st.radio("페이지 선택", ["명언 추가", "발화자 추가", "레퍼런스 추가", "발화자 수정"])
+page = st.radio("페이지 선택", ["명언 추가", "발화자 추가", "레퍼런스 추가", "발화자 직업 추가", "레퍼런스 타입 추가", "발화자 수정"])
 
 floating = st.radio("플로팅 띄우기", ["예", "아니오"])
 
@@ -17,6 +17,22 @@ st.markdown(
         border-radius: 10px;        /* 테두리 둥글기 */
         background-color: #f9f9f9;  /* 배경 색상 */
         margin-top: 20px;
+    }
+    .floating-container {
+        position: fixed;
+        bottom: 10%;
+        right: 2%;
+        width: 300px;
+        padding: 20px;
+        background-color: #ee4d30;
+        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+        z-index: 100;
+    }
+    
+    p {
+        font-size : 18px;
+        font-weight : 600;
     }
     </style>
     """,
@@ -66,7 +82,8 @@ if page == "명언 추가":
             "speaker_name" : "",
             "reference" : "",
             "reference_type" : "",
-            "ready_create" : 0}
+            "ready_create" : False,
+            "reference_create" : False}
 
     if "new_quote" not in st.session_state:
         st.session_state.new_quote = new_quote
@@ -143,44 +160,119 @@ if page == "명언 추가":
             references = fetch_similar_reference(reference_input, db)
             if references:
                 for ref in references:
-                    st.button(ref.reference_name)
+                    if st.button(ref.reference_name):
+                        st.session_state.new_quote["reference_id"] = ref.reference_id
+                        st.session_state.quote_meta["reference"] = ref.reference_name
             else:
                 st.write("유사한 레퍼런스가 없습니다.")
-        
+                
+        if not st.session_state.quote_meta["reference"]:
+            if st.button("레퍼런스 추가하기!") or st.session_state.quote_meta["reference_create"]:
+                st.session_state.quote_meta["reference_create"] = True
+                
+                new_reference = {
+                    "reference_name" : "",
+                    "reference_org_name" : "",
+                    "year" : "",
+                    "reference_type_id" : "",
+                }
+                
+                ref_meta = {
+                    "reference_type" : "",
+                    "create_ready" : False
+                }
+                
+                if "new_reference" not in st.session_state:
+                    st.session_state.new_reference = new_reference
+                    st.session_state.ref_meta = ref_meta
+                
+                reference_input = st.text_input("레퍼런스의 한글 이름을 입력하세요")
+                
+                if reference_input:
+                    
+                    references = fetch_similar_reference(reference_input, db)
+                    cont1 = st.container(border=True)
+                    cont1.write("#### 유사한 레퍼런스:")
+                    if references:
+                        for ref in references:
+                            cont1.button(ref.reference_name)
+                    
+                    else:
+                        cont1.write("#### 유사한 레퍼런스가 없습니다.")
+                
+                    if st.button("레퍼런스 등록"):
+                        
+                        st.session_state.new_reference["reference_name"] = reference_input
+                    
+                cont2 = st.container(border=True)
+                if st.session_state.new_reference["reference_name"]:
+                    
+                    reference_org_name = cont2.text_input("레퍼런스의 원어 이름을 입력하세요")
+                    
+                    if reference_org_name:
+                        cont2.button("원어 레퍼런스 등록")
+                        st.session_state.new_reference["reference_org_name"] = reference_org_name
+                
+                if st.session_state.new_reference["reference_name"]:
+                    
+                    year = cont2.text_input("연도를 입력하세요")
+                    if year and cont2.button("연도 등록"):
+                        st.session_state.new_reference["year"] = year
+                
+                
+                if st.session_state.new_reference["reference_name"]:
+                    
+                    reference_type = fetch_all_reference_type(db)
+                    
+                    ref_func = lambda x : x.reference_type
+                    
+                    if reference_type:
+                        select_ref : None = st.selectbox("레퍼런스 타입을 선택해주세요",
+                                                        reference_type,
+                                                        index=None,
+                                                        format_func=ref_func,
+                                                        placeholder="레퍼런스 타입")
+                        if select_ref:
+                            st.session_state.new_reference["reference_type_id"] = select_ref.reference_type_id
+                            st.session_state.ref_meta["reference_type"] = select_ref.reference_type
+                
+                if st.session_state.new_reference["reference_type_id"]:
+                    
+                    if st.button("레퍼런스 추가") or st.session_state.ref_meta["create_ready"]:
+                        st.session_state.ref_meta["create_ready"] = True
+                        st.session_state.new_reference
+                        
+                        if st.button("진짤루요?", type="primary"):
+                            
+                            d = remove_null(st.session_state.new_reference)
+                            new_ref = Reference(**d)
+                            db.add(new_ref)
+                            db.commit()
+                            
+                            st.write(f"### {reference_input} 추가 완료! 다시 검색해주세요!")
+                            
+                            st.session_state.new_reference = new_reference
+                            st.session_state.ref_meta = ref_meta
+                            st.session_state.quote_meta["reference_create"] = False
+
     if (st.session_state.new_quote["ko_sentence"]
         and st.session_state.new_quote["category_id"]):
         
         if st.button("데이터 생성", type="primary") or st.session_state.quote_meta["ready_create"]:
-            st.session_state.quote_meta["ready_create"] = 1
+            st.session_state.quote_meta["ready_create"] = True
             st.session_state.new_quote
-            if st.button("정말로 생성합니다", type="primary"):
+            if st.button("진짤루요?", type="primary"):
                 d = remove_null(st.session_state.new_quote)
                 quote = Quote(**d)
                 if data_save(quote, db):
-                    st.write("생성 완료!")
+                    st.write(f"{quote_input[10:]}... 생성 완료!")
+                    st.session_state.new_quote = new_quote
+                    st.session_state.meta = meta
             
 
     if floating == "예":
         st.markdown(
         f"""
-        <style>
-        .floating-container {{
-            position: fixed;
-            bottom: 10%;
-            right: 2%;
-            width: 300px;
-            padding: 20px;
-            background-color: #ee4d30;
-            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            z-index: 100;
-        }}
-        
-        p {{
-            font-size : 18px;
-            font-weight : 600;
-        }}
-        </style>
         <div class="floating-container" style="font-size: 20px;">
             <h3>명언 추가 </h3>
             <p>한국어 : {st.session_state.new_quote["ko_sentence"]}</p>
@@ -197,17 +289,18 @@ elif page=="발화자 추가":
     
     new_speaker = {"ko_name" : "",
                    "org_name" : "",
-                   "career" : "",
+                   "speaker_career_id" : "",
                    "speaker_description" : "",
                    "born_date" : "",
                    "death_date" : ""}
     
-    speaker_meta = {"career" : ""}
+    meta = {"career" : "",
+            "create_ready": False}
     
     
     if "new_speaker" not in st.session_state:
         st.session_state.new_speaker = new_speaker
-        st.session_state.speaker_meta = speaker_meta
+        st.session_state.meta = meta
     
     
     st.title("발화자 추가")
@@ -251,16 +344,18 @@ elif page=="발화자 추가":
         
         speaker_career = cont.text_input("발화자의 직업을 입력하세요")
         
-        careers = fetch_similar_speaker_career(speaker_career, db)
         
         if speaker_career:
+            careers = fetch_similar_speaker_career(speaker_career, db)
             
             if careers:
                 for c in careers:
                     if cont.button(f"{c.speaker_career}"):
-                        st.session_state.new_speaker["career"] = c.speaker_career_id
-                        st.session_state.speaker_meta["career"] = c.speaker_career
-                    
+                        st.session_state.new_speaker["speaker_career_id"] = c.speaker_career_id
+                        st.session_state.meta["career"] = c.speaker_career
+            else:
+                cont.write("#### 유사한 직업이 없습니다!")
+                        
         
     if st.session_state.new_speaker["org_name"]:
         
@@ -281,36 +376,40 @@ elif page=="발화자 추가":
         death = col2.text_input("몰년")
         
         if born:
-            bd = st.button("생몰연도 등록")
-            st.session_state.new_speaker["born_date"] = born
-            st.session_state.new_speaker["death_date"] = death
+            if st.button("생몰연도 등록"):
+                st.session_state.new_speaker["born_date"] = born
+                st.session_state.new_speaker["death_date"] = death
+    
+    if st.session_state.new_speaker["org_name"]:
+        
+        if st.button("발화자 등록") or st.session_state.meta["create_ready"]:
+            
+            st.session_state.new_speaker
+            st.session_state.meta["create_ready"] = True
+            
+            if st.button("진짤루요?", type="primary"):
+                
+                d = st.session_state.new_speaker
+                d = remove_null(d)
+                speaker = Speaker(**d)
+                if st.session_state.meta["create_ready"]:
+                    db.add(speaker)
+                    db.commit()
+                
+                st.write(f"#### {speaker.ko_name} 생성 완료!")
+                st.session_state.new_speaker = new_speaker
+                st.session_state.meta = meta
+                
+            
     
     if floating == "예":
         st.markdown(
         f"""
-        <style>
-        .floating-container {{
-            position: fixed;
-            bottom: 10%;
-            right: 2%;
-            width: 300px;
-            padding: 20px;
-            background-color: #ee4d30;
-            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            z-index: 100;
-        }}
-        
-        p {{
-            font-size : 18px;
-            font-weight : 600;
-        }}
-        </style>
         <div class="floating-container" style="font-size: 20px;">
             <h3>발화자 추가 </h3>
             <p>한글 이름 : {st.session_state.new_speaker["ko_name"]}</p>
             <p>원어 영어 : {st.session_state.new_speaker["org_name"]}</p>
-            <p>직업 : {st.session_state.speaker_meta["career"]}</p>
+            <p>직업 : {st.session_state.meta["career"]}</p>
             <p>설명 : {st.session_state.new_speaker["speaker_description"]}</p>
             <p>생몰 년도 : {st.session_state.new_speaker["born_date"]} ~ {st.session_state.new_speaker["death_date"]}</p>
         </div>
@@ -327,13 +426,16 @@ elif page=="레퍼런스 추가":
         "reference_type_id" : "",
     }
     
-    reference_meta = {
-        "reference_type" : ""
+    meta = {
+        "reference_type" : "",
+        "create_ready" : False
     }
     
     if "new_reference" not in st.session_state:
         st.session_state.new_reference = new_reference
-        st.session_state.reference_meta = reference_meta
+        st.session_state.meta = meta
+        
+    st.title("레퍼런스 추가")
     
     reference_input = st.text_input("레퍼런스의 한글 이름을 입력하세요")
     
@@ -383,41 +485,105 @@ elif page=="레퍼런스 추가":
                                              placeholder="레퍼런스 타입")
             if select_ref:
                 st.session_state.new_reference["reference_type_id"] = select_ref.reference_type_id
-                st.session_state.reference_meta["reference_type"] = select_ref.reference_type
+                st.session_state.meta["reference_type"] = select_ref.reference_type
+    
+    if st.session_state.new_reference["reference_type_id"]:
+        
+        if st.button("레퍼런스 추가") or st.session_state.meta["create_ready"]:
+            st.session_state.meta["create_ready"] = True
+            st.session_state.new_reference
+            
+            if st.button("진짤루요?", type="primary"):
+                
+                d = remove_null(st.session_state.new_reference)
+                new_ref = Reference(**d)
+                db.add(new_ref)
+                db.commit()
+                
+                st.write(f"### {reference_input} 추가 완료!")
+                
+                st.session_state.new_reference = new_reference
+                st.session_state.meta = meta
             
         
     
     if floating == "예":
         st.markdown(
         f"""
-        <style>
-        .floating-container {{
-            position: fixed;
-            bottom: 10%;
-            right: 2%;
-            width: 300px;
-            padding: 20px;
-            background-color: #ee4d30;
-            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            z-index: 100;
-        }}
-        
-        p {{
-            font-size : 18px;
-            font-weight : 600;
-        }}
-        </style>
         <div class="floating-container" style="font-size: 20px;">
             <h3>레퍼런스 추가 </h3>
             <p>한글 이름 : {st.session_state.new_reference["reference_name"]}</p>
             <p>원어 영어 : {st.session_state.new_reference["reference_org_name"]}</p>
             <p>연도 : {st.session_state.new_reference["year"]}</p>
-            <p>타입 : {st.session_state.reference_meta["reference_type"]}</p>
+            <p>타입 : {st.session_state.meta["reference_type"]}</p>
         </div>
         """,
         unsafe_allow_html=True
         )
+
+elif page=="발화자 직업 추가":
+    
+    if 'new_sp_career' not in st.session_state:
+        st.session_state.new_sp_career = None
+        st.session_state.create = None
+        
+    st.title("발화자 직업 추가")
+    
+    career = st.text_input("발화자의 직업을 입력해주세요")
+    
+    if career and not st.session_state.create:
+        
+        careers = fetch_similar_speaker_career(career, db)
+        
+        if careers:
+            for career in careers:
+                st.button(career.speaker_career)
+        elif not st.session_state.create:
+            st.write("#### 유사한 직업이 없습니다")
+            if st.button("직업 추가하기") or st.session_state.new_sp_career:
+                st.session_state.new_sp_career = career
+                st.session_state.new_sp_career
+                
+                if st.button("진짤루요?", type="primary"):
+                    new_sp_career = SpeakerCareer(speaker_career = career)
+                    db.add(new_sp_career)
+                    db.commit()
+                    st.session_state.create = True
+                    if st.session_state.create:
+                        st.write(f"#### {career} 추가 완료!")
+                        st.session_state.clear()
+
+elif page=="레퍼런스 타입 추가":
+
+    if 'new_ref_type' not in st.session_state:
+        st.session_state.new_ref_type = None
+        st.session_state.create = None
+        
+    st.title("레퍼런스 타입 추가")
+    
+    new_type = st.text_input("레퍼런스 타입을 입력해주세요")
+    
+    if new_type and not st.session_state.create:
+        
+        ref_types = fetch_all_reference_type(db)
+        
+        if ref_types:
+            for ref_type in ref_types:
+                st.button(ref_type.reference_type)
+        elif not st.session_state.create:
+            st.write("#### 유사한 타입이 없습니다")
+            if st.button("레퍼런스 타입 추가하기") or st.session_state.new_ref_type:
+                st.session_state.new_ref_type = new_type
+                st.session_state.new_ref_type
+                
+                if st.button("진짤루요?", type="primary"):
+                    new_ref_type = ReferenceType(reference_type = new_type)
+                    db.add(new_ref_type)
+                    db.commit()
+                    st.session_state.create = True
+                    if st.session_state.create:
+                        st.write(f"#### {new_ref_type} 추가 완료!")
+                        st.session_state.clear()
 
 elif page=="발화자 수정":
     
@@ -529,24 +695,6 @@ elif page=="발화자 수정":
     if floating == "예":
         st.markdown(
         f"""
-        <style>
-        .floating-container {{
-            position: fixed;
-            bottom: 10%;
-            right: 2%;
-            width: 300px;
-            padding: 20px;
-            background-color: #ee4d30;
-            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            z-index: 100;
-        }}
-        
-        p {{
-            font-size : 18px;
-            font-weight : 600;
-        }}
-        </style>
         <div class="floating-container" style="font-size: 20px;">
             <h3>발화자 추가 </h3>
             <p>ID : {st.session_state.speaker["speaker_id"]}</p>
