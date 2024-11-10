@@ -114,5 +114,5 @@ jobs:
 
       # 9. Cleanup PEM key
       - name: Remove PEM file
-      run: |
-        rm -f ec2-key.pem
+        run: |
+          rm -f ec2-key.pem
