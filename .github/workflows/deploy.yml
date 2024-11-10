@@ -25,7 +25,7 @@ jobs:
       - name: Detect changes in the directory
         id: check_changes
         run: |
-          git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep "^${{ matrix.app }}/" || echo "NO_CHANGES"
+          git diff --name-only HEAD~1 HEAD | grep "^${{ matrix.app }}/" || echo "NO_CHANGES"
   
       # 3. 변경 없는 경우 스킵
       - name: Skip unchanged apps
@@ -61,7 +61,7 @@ jobs:
         if: steps.check_changes.outputs.result != 'NO_CHANGES'
         run: |
           ssh -i ec2-key.pem ubuntu@${{ secrets.SERVER_HOST }} << EOF
-            gunzip -c /home/ubuntu/${{ matrix.app }}.tar.gz | docker load
+            gunzip -c /home/ubuntu/${{ matrix.app }}.tar.gz | sudo docker load
             sudo docker stop ${{ matrix.app }} || true
             sudo docker rm ${{ matrix.app }} || true
             
@@ -94,7 +94,12 @@ jobs:
               exit 1
             fi
 
+            echo "$PORT"
+            echo $PORT
+
             sudo docker run -d --name ${{ matrix.app }} --env-file /home/ubuntu/.env -p $PORT:$PORT ${{ matrix.app }}:latest
+
+            rm .env
           EOF
 
       # 6. Cleanup PEM key
