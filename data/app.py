@@ -841,4 +841,3 @@ elif page=="발화자 수정":
         unsafe_allow_html=True
         )
         
-        

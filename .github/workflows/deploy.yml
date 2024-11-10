@@ -94,10 +94,7 @@ jobs:
               exit 1
             fi
 
-            echo "$PORT"
-            echo $PORT
-
-            sudo docker run -d --name ${{ matrix.app }} --env-file /home/ubuntu/.env -p $PORT:$PORT ${{ matrix.app }}:latest
+            sudo docker run -d --name ${{ matrix.app }} --env-file /home/ubuntu/.env -p \$PORT:\$PORT ${{ matrix.app }}:latest
 
             rm .env
           EOF
