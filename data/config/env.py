@@ -5,7 +5,7 @@ def convert_to_int(value: str | None):
         raise ValueError("None 값은 숫자로 변환할 수 없습니다.")
     return int(value)
 
-if os.environ.get("31QUOTE_DEPLOY_MODE") == "deploy":
+if os.environ.get("31QUOTE_DEPLOY_MODE") == "DEPLOY":
     DB_HOST = os.environ.get("DB_HOST")
     DB_PASSWORD = os.environ.get("DB_PASSWORD")
     DB_USERNAME = os.environ.get("DB_USERNAME")

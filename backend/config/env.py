@@ -15,8 +15,8 @@ if os.environ.get("31QUOTE_DEPLOY_MODE") == "DEPLOY":
     ADMIN_ID = os.environ.get('ADMIN_ID')
     ALGORITHM = os.environ.get('ALGORITHM')
     SECRET_KEY = os.environ.get('SECRET_KEY')
-    ACCESS_TOKEN_EXPIRE_MINUTES = convert_to_int(os.environ.get('ACCESS_TOKEN_EXPIRE_MINUTES'))
-    REFRESH_TOKEN_EXPIRE_MINUTES = convert_to_int(os.environ.get('REFRESH_TOKEN_EXPIRE_MINUTES'))
+    ACCESS_TOKEN_EXPIRE_MINUTES = os.environ.get('ACCESS_TOKEN_EXPIRE_MINUTES')
+    REFRESH_TOKEN_EXPIRE_MINUTES = os.environ.get('REFRESH_TOKEN_EXPIRE_MINUTES')
     
     REDIS_HOST = os.environ.get("REDIS_HOST")
     REDIS_PORT = os.environ.get("REDIS_PORT")
