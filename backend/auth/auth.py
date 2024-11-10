@@ -35,7 +35,7 @@ def create_refresh_token(data: dict) -> str:
 
 
 async def get_current_user(token: str = Depends(_oauth2_scheme)) -> tuple[int, int]:
-    if await r.match_token(token):
+    if r.connect and await r.match_token(token):
         raise _credentials_exception
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
