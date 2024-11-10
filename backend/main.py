@@ -19,7 +19,6 @@ async def lifespan(app : FastAPI):
     print("서버 종료")
 
 
-
 app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
@@ -37,10 +36,12 @@ app.include_router(user_router, prefix='/user', tags=['users'])
 
 @app.get('/')
 async def home():
-    return await r.get_quote_by_category(1)
+    try:
+        return await r.get_quote_by_category(1)
+    except:
+        return "redis 연결이 해제되었습니다."
 
 if __name__ == '__main__':
 
     import uvicorn
-    uvicorn.run('main:app', port=5050, host='0.0.0.0', reload=True)
-    
+    uvicorn.run('main:app', port=5050, host='127.0.0.1')
