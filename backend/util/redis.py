@@ -1,3 +1,4 @@
+import asyncio
 import random
 import json
 import redis.asyncio as aioredis
@@ -8,9 +9,13 @@ from config import REDIS_DB, REDIS_HOST, REDIS_PORT, REFRESH_TOKEN_EXPIRE_MINUTE
 class _R:
     
     def __init__(self):
+        self.__r = aioredis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, socket_timeout=1)
+        self.connect = True
+    
+    async def _initalize(self):
         try:
-            self.__r = aioredis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, socket_timeout=1)
-            self.connect = True
+            x = await self.__r.ping()
+            print(x)
             print("Redis 연결 성공")
         except:
             self.__r = None
@@ -94,3 +99,4 @@ class _R:
             return False
 
 r = _R()
+asyncio.run(r._initalize())

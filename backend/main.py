@@ -9,10 +9,11 @@ from server_setup import ServerSetup
 
 @asynccontextmanager
 async def lifespan(app : FastAPI):
-    await r.flush_db()
-    server_setup = ServerSetup(r)
-    await server_setup.mount_redis_data()
-    del server_setup
+    if r.connect == True:
+        await r.flush_db()
+        server_setup = ServerSetup(r)
+        await server_setup.mount_redis_data()
+        del server_setup
     
     yield  # FastAPI 서버 실행
     
