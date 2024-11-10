@@ -87,7 +87,7 @@ jobs:
 
             echo "ADMIN_ID=${{ secrets.ADMIN_ID }}" >> ${{ matrix.app }}.env
 
-            echo "VITE_REACT_APP_API_BASE_URL"=${{ secrets.SERVER_HOST }}
+            echo "VITE_REACT_APP_API_BASE_URL"=${{ secrets.VITE_REACT_APP_API_BASE_URL }} >> ${{ matrix.app }}.env
 
             # 서비스별 포트 설정
             if [ "${{ matrix.app }}" = "frontend" ]; then
@@ -106,7 +106,13 @@ jobs:
             rm ${{ matrix.app }}.env
           EOF
 
-      # 6. Cleanup PEM key
-      - name: Remove PEM file
+      # 10. Docker 리소스 정리 (Cleanup)
+      - name: Cleanup Docker resources
         run: |
-          rm -f ec2-key.pem
+          ssh -i ec2-key.pem ubuntu@${{ secrets.SERVER_HOST }} "sudo docker system prune -f"
+
+
+      # 9. Cleanup PEM key
+      - name: Remove PEM file
+      run: |
+        rm -f ec2-key.pem
