@@ -9,4 +9,4 @@ RUN npm install
 
 # Vite 개발 서버 실행
 COPY . .
-CMD ["npm", "dev", "--", "--host", "0.0.0.0", "--port", "3000"]
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "3000"]
