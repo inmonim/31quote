@@ -9,7 +9,7 @@ class CreateReferenceTypeDTO(BaseModel):
 class CreateReferenceDTO(BaseModel):
     
     reference_name : str
-    year : int | None = None
+    year : str | None = None
     reference_type_id : int
     
     
@@ -25,7 +25,7 @@ class ResponseReferenceDTO(BaseModel):
     
     reference_id : int
     reference_name : str
-    year : int | None = None
+    year : str | None = None
     reference_type : ResponseReferenceTypeDTO
     
     model_config = ConfigDict(from_attributes=True)

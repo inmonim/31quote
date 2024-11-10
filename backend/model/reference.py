@@ -16,7 +16,7 @@ class Reference(Base):
     
     reference_id = Column(BigInteger, primary_key=True, autoincrement=True)
     reference_name = Column(String(255), nullable=False)
-    year = Column(Integer, nullable=True)
+    year = Column(String, nullable=True)
     
     created_at = Column(DateTime, default=func.current_timestamp())
     updated_at = Column(DateTime, default=func.current_timestamp(), onupdate=func.current_timestamp())
