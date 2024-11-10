@@ -19,4 +19,6 @@ else:
     DB_TABLE = env.get("DB_TABLE")
     DB_PORT = env.get("DB_PORT")
     
+    OPENAI_API_KEY = env.get("OPENAI_API_KEY")
+    
     del env

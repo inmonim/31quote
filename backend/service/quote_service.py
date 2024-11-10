@@ -1,7 +1,5 @@
 import random
 
-from fastapi import HTTPException
-
 from util import r
 from repository import quote_repo
 from DTO import ResponseQuoteDTO
@@ -11,7 +9,7 @@ class QuoteService:
     def __init__(self, quote_repo=quote_repo, redis=r):
         print("Quote Service 생성")
         self.quote_repo = quote_repo
-        self.r = r
+        self.r = redis
         
     
     async def get_all_random_quote(self, db) -> ResponseQuoteDTO:

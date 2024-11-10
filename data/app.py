@@ -42,9 +42,7 @@ st.markdown(
 # DB 연결 설정
 db = next(get_db())
 
-# 입력 필드와 관련된 실시간 검색 함수
 def fetch_similar_quotes(query: str, db: Session):
-    # 유사한 명언을 찾는 ORM 쿼리 예시
     return db.query(Quote).filter(Quote.ko_sentence.like(f"%{query}%")).limit(5).all()
 
 def fetch_similar_speaker(speaker: str, db : Session):
@@ -63,7 +61,7 @@ def fetch_all_reference_type(db : Session):
     return db.query(ReferenceType).all()
 
 def remove_null(data : dict):
-    return {k:v for k, v in data.items() if v != "" or v != None}
+    return {k:v for k, v in data.items() if v != "" and v != None}
 
 def data_save(data, db : Session):
     db.add(data)
@@ -253,7 +251,7 @@ if page == "명언 추가":
                             
                             st.session_state.new_reference = new_reference
                             st.session_state.ref_meta = ref_meta
-                            st.session_state.quote_meta["reference_create"] = False
+                            st.session_state.new_quote_meta["reference_create"] = False
 
     if (st.session_state.new_quote["ko_sentence"]
         and st.session_state.new_quote["category_id"]):
@@ -265,7 +263,7 @@ if page == "명언 추가":
                 d = remove_null(st.session_state.new_quote)
                 quote = Quote(**d)
                 if data_save(quote, db):
-                    st.write(f"{quote_input[10:]}... 생성 완료!")
+                    st.write(f"{quote_input[-10:]}... 생성 완료!")
                     st.session_state.new_quote = new_quote
                     st.session_state.new_quote_meta = new_quote_meta
             
@@ -625,10 +623,10 @@ elif page=="명언 수정":
                     st.session_state.modify_quote = q
                     m = {"category" : quote.category.category,
                          "category_change": False,
-                         "speaker_name" : quote.speaker.ko_name,
+                         "speaker_name" : quote.speaker.ko_name if quote.speaker_id else None,
                          "speaker_change" : False,
-                         "reference" : quote.reference.reference_name,
-                         "reference_type" : quote.reference.reference_type.reference_type,
+                         "reference" : quote.reference.reference_name if quote.reference_id else None,
+                         "reference_type" : quote.reference.reference_type.reference_type if quote.reference else None,
                          "ready_modify" : False,
                          "reference_change" : False}
                     st.session_state.modify_quote_meta = m
@@ -697,7 +695,7 @@ elif page=="명언 수정":
                 st.session_state.modify_quote
                 st.session_state.modify_quote_meta
                 if st.button("진짤루요?"):
-                    d = st.session_state.modify_quote
+                    d = remove_null(st.session_state.modify_quote)
                     quote = Quote(**d)
                     db.merge(quote)
                     db.commit()
