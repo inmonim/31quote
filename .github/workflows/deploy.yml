@@ -20,6 +20,8 @@ jobs:
       # 1. 코드 체크아웃
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
   
       # 2. 변경 감지
       - name: Detect changes in the directory
@@ -65,22 +67,24 @@ jobs:
             sudo docker stop ${{ matrix.app }} || true
             sudo docker rm ${{ matrix.app }} || true
             
-            touch .env
-            echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
-            echo "DB_TABLE=${{ secrets.DB_TABLE }}" >> .env
-            echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
-            
-            echo "ALGORITHM=${{ secrets.ALGORITHM }}" >> .env
-            echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
-            echo "ACCESS_TOKEN_EXPIRE_MINUTES=${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}" >> .env
-            echo "REFRESH_TOKEN_EXPIRE_MINUTES=${{ secrets.REFRESH_TOKEN_EXPIRE_MINUTES }}" >> .env
-            echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
-            echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> .env
-            echo "REDIS_DB=${{ secrets.REDIS_DB }}" >> .env
+            touch ${{ matrix.app }}.env
+            echo "31QUOTE_DEPLOY_MODE=DEPLOY" >> ${{ matrix.app }}.env
 
-            echo "ADMIN_ID=${{ secrets.ADMIN_ID }}" >> .env
+            echo "DB_HOST=${{ secrets.DB_HOST }}" >> ${{ matrix.app }}.env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ${{ matrix.app }}.env
+            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> ${{ matrix.app }}.env
+            echo "DB_TABLE=${{ secrets.DB_TABLE }}" >> ${{ matrix.app }}.env
+            echo "DB_PORT=${{ secrets.DB_PORT }}" >> ${{ matrix.app }}.env
+            
+            echo "ALGORITHM=${{ secrets.ALGORITHM }}" >> ${{ matrix.app }}.env
+            echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> ${{ matrix.app }}.env
+            echo "ACCESS_TOKEN_EXPIRE_MINUTES=${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}" >> ${{ matrix.app }}.env
+            echo "REFRESH_TOKEN_EXPIRE_MINUTES=${{ secrets.REFRESH_TOKEN_EXPIRE_MINUTES }}" >> ${{ matrix.app }}.env
+            echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> ${{ matrix.app }}.env
+            echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> ${{ matrix.app }}.env
+            echo "REDIS_DB=${{ secrets.REDIS_DB }}" >> ${{ matrix.app }}.env
+
+            echo "ADMIN_ID=${{ secrets.ADMIN_ID }}" >> ${{ matrix.app }}.env
 
             # 서비스별 포트 설정
             if [ "${{ matrix.app }}" = "frontend" ]; then
@@ -94,9 +98,9 @@ jobs:
               exit 1
             fi
 
-            sudo docker run -d --name ${{ matrix.app }} --env-file /home/ubuntu/.env -p \$PORT:\$PORT ${{ matrix.app }}:latest
+            sudo docker run -d --name ${{ matrix.app }} --env-file /home/ubuntu/${{ matrix.app }}.env -p \$PORT:\$PORT ${{ matrix.app }}:latest
 
-            rm .env
+            rm ${{ matrix.app }}.env
           EOF
 
       # 6. Cleanup PEM key
