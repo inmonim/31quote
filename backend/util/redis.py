@@ -100,8 +100,4 @@ class _R:
         except:
             return False
 
-async def redist_connect_test(r : _R):
-    return await r._initalize()
-
 r = _R()
-r = asyncio.run(redist_connect_test(r))

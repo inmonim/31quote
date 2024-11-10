@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,7 +10,8 @@ from server_setup import ServerSetup
 
 @asynccontextmanager
 async def lifespan(app : FastAPI):
-    if r.connect == True:
+    await r._initalize()
+    if r.connect:
         await r.flush_db()
         server_setup = ServerSetup(r)
         await server_setup.mount_redis_data()
