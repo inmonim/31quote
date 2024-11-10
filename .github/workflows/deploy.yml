@@ -4,7 +4,6 @@ on:
   push:
     branches: [ "develop" ]
     paths:
-      # - 'frontend/**'
       - 'backend/**'
       - 'data/**'
 
@@ -14,7 +13,6 @@ jobs:
 
     strategy:
       matrix:
-        # app: [frontend, backend, data]
         app: [backend, data]  # 대상 앱
 
     steps:
