@@ -21,6 +21,9 @@ class ServerSetup:
         위 형식으로 quote_id에 해당하는 데이터를 json형식으로 value에 삽입
         """
         
+        if not self.r.connect:
+            return False
+        
         db = await anext(get_db())
         
         category_list = await category_repo.get_all_category(db)
