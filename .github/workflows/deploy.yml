@@ -112,6 +112,7 @@ jobs:
 
       # 10. Docker 리소스 정리 (Cleanup)
       - name: Cleanup Docker resources
+        if: steps.check_changes.outputs.result != 'NO_CHANGES'
         run: |
           ssh -i ec2-key.pem ubuntu@${{ secrets.SERVER_HOST }} "sudo docker system prune -f"
 
