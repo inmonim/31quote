@@ -46,11 +46,13 @@ jobs:
 
       # 5. PEM 키 파일 생성
       - name: Create PEM file
+        if: steps.check_changes.outputs.result != 'NO_CHANGES'
         run: |
           echo "${{ secrets.SERVER_PEM }}" > ec2-key.pem
           chmod 600 ec2-key.pem
 
       - name: Add host to known_hosts
+        if: steps.check_changes.outputs.result != 'NO_CHANGES'
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
@@ -116,5 +118,6 @@ jobs:
 
       # 9. Cleanup PEM key
       - name: Remove PEM file
+        if: steps.check_changes.outputs.result != 'NO_CHANGES'
         run: |
           rm -f ec2-key.pem
