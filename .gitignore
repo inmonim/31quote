@@ -8,4 +8,6 @@ secrets
 **/__pycache__/**
 **/.pytest_cache
 
+**/**.csv
+
 31quote-org
