@@ -34,13 +34,13 @@ jobs:
       - name: Skip unchanged apps
         if: steps.check_changes.outputs.result == 'NO_CHANGES'
         run: 
-          echo "==========${{ steps.check_changes.outputs.result }}"
           echo "No changes detected in ${{ matrix.app }}, skipping build."
   
       # 4. Docker 이미지 빌드
       - name: Build Docker image
         if: steps.check_changes.outputs.result != 'NO_CHANGES'
         run: |
+          echo "==========${{ steps.check_changes.outputs.result }}"
           docker build -t ${{ matrix.app }}:latest ./${{ matrix.app }}
           docker save ${{ matrix.app }}:latest | gzip > ${{ matrix.app }}.tar.gz
 
