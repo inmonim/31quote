@@ -17,6 +17,9 @@ export function Home() {
   const [speakerOrgName, setSpeakerOrgName] = useState('');
   // const [reference, setReference] = useState('');
 
+  // option
+  const [textAlign, setTextAlign] = useState('');
+
   const navigate = useNavigate();
 
   const handleSwipe = (event, info) => {
@@ -29,6 +32,7 @@ export function Home() {
 
   useEffect(() => {
     getAllRandomQuote().then(response => {
+      setTextAlign(localStorage.getItem("alignment"))
       const data = response.data
       setQuoteId(data.quote_id)
       setKoSentence(data.ko_sentence)
@@ -45,24 +49,31 @@ export function Home() {
         className="home"
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
+        onPanEnd={handleSwipe}
+        initial={{ x: "-30%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "-100%" }}
+        transition={{
+          type: "tween",
+          duration: 0.3,
+          ease: "easeOut", // 또는 "easeInOut"
+        }}
         style={{
           height: "100vh",
           justifyContent: "center"
         }}
-        onPanEnd={handleSwipe}
-        initial={{ x: 0 }}
-        animate={{ x: 0 }}
-        exit={{ x: "-100%" }}
       >
-      <div style={{"textAlign" : "center"}}>
-        <h2>{koSentence}</h2>
-        <h3>{enSentence}</h3>
-      </div>
-      <div style={{"textAlign" : "left"}}>
-        <h3>{speakerKoName}</h3>
-        <p>{speakerOrgName}</p>
-        {/* <p>&lt;{reference}&gt;중에서</p> */}
-        <p>{category}에 관하여</p>
+      <div style={{ textAlign: textAlign}}>
+        <div>
+          <h2>{koSentence}</h2>
+          <h3>{enSentence}</h3>
+        </div>
+        <div>
+          <h3>{speakerKoName}</h3>
+          <p>{speakerOrgName}</p>
+          {/* <p>&lt;{reference}&gt;중에서</p> */}
+          <p>{category}에 관하여</p>
+        </div>
       </div>
     </motion.div>
   )
