@@ -25,7 +25,7 @@ function Options() {
       transition={{
         type: "tween",
         duration: 0.3,
-        ease: "easeOut", // 또는 "easeInOut"
+        ease: "easeOut", // 또는"easeInOut"
       }}
       style={{
         height: "100vh"
