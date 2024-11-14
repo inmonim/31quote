@@ -7,6 +7,19 @@ const apiClient = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  paramsSerializer: (params) => {
+    const searchParams = new URLSearchParams();
+    Object.keys(params).forEach((key) => {
+      const value = params[key];
+      if (Array.isArray(value)) {
+        // 배열 처리
+        value.forEach((v) => searchParams.append(key, v));
+      } else {
+        searchParams.append(key, value);
+      }
+    });
+    return searchParams.toString();
+  },
 });
 
 // 요청 전 인터셉터 (Optional)
