@@ -29,6 +29,7 @@ jobs:
         id: check_changes
         run: |
           CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | grep "^${{ matrix.app }}/" || echo "NO_CHANGES")
+          CHANGED_FILES=$(echo "$CHANGED_FILES" | tr '\n' ',') 
           echo "result=$CHANGED_FILES" >> $GITHUB_OUTPUT
   
       # 3. 변경 없는 경우 스킵
