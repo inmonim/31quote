@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from controller import quote_manage_router, quote_router, user_router
+from controller import *
 
 from util import r
 from server_setup import ServerSetup
@@ -35,6 +35,7 @@ app.add_middleware(
 app.include_router(quote_manage_router, prefix='/admin', tags=['admin'])
 app.include_router(quote_router, prefix='/quote', tags=['quote'])
 app.include_router(user_router, prefix='/user', tags=['users'])
+app.include_router(category_router, prefix='/category', tags=['categorys'])
 
 
 @app.get('/')
@@ -47,4 +48,4 @@ async def home():
 if __name__ == '__main__':
 
     import uvicorn
-    uvicorn.run('main:app', port=5050, host='127.0.0.1')
+    uvicorn.run('main:app', port=5050, host='127.0.0.1', reload=True)

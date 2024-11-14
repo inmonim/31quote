@@ -39,7 +39,7 @@ async def get_category_random_quote(category_id : int, db : Session = Depends(ge
     return random_quote
 
 @router.get("/category_list_random", status_code=200, summary="n개 카테고리 랜덤 쿼트")
-async def get_category_list_random_quote(category_ids : list[int] = Query(None), db : Session = Depends(get_db)) -> ResponseQuoteDTO:
+async def get_category_list_random_quote(category_ids : list[int] = Query(...), db : Session = Depends(get_db)) -> ResponseQuoteDTO:
     """
     n개의 카테고리 id에 해당gk는 quote 랜덤 조회하여 반환
     
