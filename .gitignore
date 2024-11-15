@@ -1,0 +1,13 @@
+.mypy_cache
+
+*.pem
+secrets
+**/.env
+
+**/__pycache__
+**/__pycache__/**
+**/.pytest_cache
+
+**/**.csv
+
+31quote-org

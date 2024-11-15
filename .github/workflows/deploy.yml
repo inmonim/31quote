@@ -1,0 +1,125 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ "develop" ]
+    paths:
+      - 'backend/**'
+      - 'data/**'
+      - '.github/**'
+      - 'frontend/**'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        app: [backend, data, frontend]  # 대상 앱
+
+    steps:
+      # 1. 코드 체크아웃
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+  
+      # 2. 변경 감지
+      - name: Detect changes in the directory
+        id: check_changes
+        run: |
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | grep "^${{ matrix.app }}/" || echo "NO_CHANGES")
+          CHANGED_FILES=$(echo "$CHANGED_FILES" | tr '\n' ',') 
+          echo "result=$CHANGED_FILES" >> $GITHUB_OUTPUT
+  
+      # 3. 변경 없는 경우 스킵
+      - name: Skip unchanged apps
+        if: steps.check_changes.outputs.result == 'NO_CHANGES'
+        run: 
+          echo "No changes detected in ${{ matrix.app }}, skipping build."
+  
+      # 4. Docker 이미지 빌드
+      - name: Build Docker image
+        if: steps.check_changes.outputs.result != 'NO_CHANGES'
+        run: |
+          docker build -t ${{ matrix.app }}:latest ./${{ matrix.app }}
+          docker save ${{ matrix.app }}:latest | gzip > ${{ matrix.app }}.tar.gz
+
+      # 5. PEM 키 파일 생성
+      - name: Create PEM file
+        if: steps.check_changes.outputs.result != 'NO_CHANGES'
+        run: |
+          echo "${{ secrets.SERVER_PEM }}" > ec2-key.pem
+          chmod 600 ec2-key.pem
+
+      - name: Add host to known_hosts
+        if: steps.check_changes.outputs.result != 'NO_CHANGES'
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+    
+      # 6. Docker 이미지 전송
+      - name: Copy Docker image to EC2
+        if: steps.check_changes.outputs.result != 'NO_CHANGES'
+        run: |
+          scp -i ec2-key.pem ${{ matrix.app }}.tar.gz ubuntu@${{ secrets.SERVER_HOST }}:/home/ubuntu/
+  
+      # 7. EC2에서 Docker 이미지 로드 및 실행
+      - name: Deploy Docker container on EC2
+        if: steps.check_changes.outputs.result != 'NO_CHANGES'
+        run: |
+          ssh -i ec2-key.pem ubuntu@${{ secrets.SERVER_HOST }} << EOF
+            gunzip -c /home/ubuntu/${{ matrix.app }}.tar.gz | sudo docker load
+            sudo docker stop ${{ matrix.app }} || true
+            sudo docker rm ${{ matrix.app }} || true
+            
+            touch ${{ matrix.app }}.env
+            echo "31QUOTE_DEPLOY_MODE=DEPLOY" >> ${{ matrix.app }}.env
+
+            echo "DB_HOST=${{ secrets.DB_HOST }}" >> ${{ matrix.app }}.env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ${{ matrix.app }}.env
+            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> ${{ matrix.app }}.env
+            echo "DB_TABLE=${{ secrets.DB_TABLE }}" >> ${{ matrix.app }}.env
+            echo "DB_PORT=${{ secrets.DB_PORT }}" >> ${{ matrix.app }}.env
+            
+            echo "ALGORITHM=${{ secrets.ALGORITHM }}" >> ${{ matrix.app }}.env
+            echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> ${{ matrix.app }}.env
+            echo "ACCESS_TOKEN_EXPIRE_MINUTES=${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}" >> ${{ matrix.app }}.env
+            echo "REFRESH_TOKEN_EXPIRE_MINUTES=${{ secrets.REFRESH_TOKEN_EXPIRE_MINUTES }}" >> ${{ matrix.app }}.env
+            echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> ${{ matrix.app }}.env
+            echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> ${{ matrix.app }}.env
+            echo "REDIS_DB=${{ secrets.REDIS_DB }}" >> ${{ matrix.app }}.env
+
+            echo "ADMIN_ID=${{ secrets.ADMIN_ID }}" >> ${{ matrix.app }}.env
+
+            echo "VITE_REACT_APP_API_BASE_URL"=${{ secrets.VITE_REACT_APP_API_BASE_URL }} >> ${{ matrix.app }}.env
+
+            # 서비스별 포트 설정
+            if [ "${{ matrix.app }}" = "frontend" ]; then
+              PORT=3000
+            elif [ "${{ matrix.app }}" = "backend" ]; then
+              PORT=5050
+            elif [ "${{ matrix.app }}" = "data" ]; then
+              PORT=8501
+            else
+              echo "Unknown application: ${{ matrix.app }}"
+              exit 1
+            fi
+
+            sudo docker run -d --name ${{ matrix.app }} --env-file /home/ubuntu/${{ matrix.app }}.env -p \$PORT:\$PORT ${{ matrix.app }}:latest
+
+            rm ${{ matrix.app }}.env
+          EOF
+
+      # 10. Docker 리소스 정리 (Cleanup)
+      - name: Cleanup Docker resources
+        if: steps.check_changes.outputs.result != 'NO_CHANGES'
+        run: |
+          ssh -i ec2-key.pem ubuntu@${{ secrets.SERVER_HOST }} "sudo docker system prune -f"
+
+
+      # 9. Cleanup PEM key
+      - name: Remove PEM file
+        if: steps.check_changes.outputs.result != 'NO_CHANGES'
+        run: |
+          rm -f ec2-key.pem
