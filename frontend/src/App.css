@@ -1,7 +1,12 @@
 #root {
+  margin: 0;
+  padding: 0;
+  width: 100vw; /* 디바이스 너비 */
+  height: var(--vh, 100vh); /* 디바이스 높이 */
+  overflow: hidden; /* 스크롤 제거 */
+  
   max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  margin: 2rem auto;
   text-align: center;
 }
 
