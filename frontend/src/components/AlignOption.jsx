@@ -16,7 +16,6 @@ export function AlignOptions() {
 
   return (
     <div>
-      <h2>글을 어느 쪽에 붙일까요?</h2>
       <div className="button-group" style={{ display: "flex", justifyContent: "center", marginTop: "5px" }}>
         {/* 왼쪽 정렬 버튼 */}
         <button

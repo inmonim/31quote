@@ -4,23 +4,43 @@ import { motion } from "framer-motion";
 
 import { getCategoryList } from "@/apis/QuoteAPI"
 
+import "./CategorySelector.css"
+
 
 function CategorySelector({ isOpen, onClose }) {
 
   const [categories, setCategories] = useState([]);
   const [userCategories, setUserCategories] = useState([]);
+  const [exit, setExit ] = useState(false)
 
   const toggleCategory = (category) => {
-    setUserCategories((prev) =>
-      prev.some((prevCategory) => prevCategory.category_id === category.category_id)
-        ? prev.filter((prevCategory) => prevCategory.category_id !== category.category_id) // 이미 선택된 경우 제거
-        : [...prev, category] // 선택되지 않은 경우 추가
-    );
+    setUserCategories((prev) => {
+      // 이미 선택된 경우
+      if (prev.some((prevCategory) => prevCategory.category_id === category.category_id)) {
+        // 요소가 1개일 경우 제거를 막음
+        if (prev.length === 1) {
+          return prev; // 아무 것도 하지 않음
+        }
+        // 요소가 2개 이상인 경우 제거
+        return prev.filter((prevCategory) => prevCategory.category_id !== category.category_id);
+      }
+  
+      // 선택되지 않은 경우 추가
+      return [...prev, category];
+    });
   };
+
+  const handleClose = () => {
+    setExit(true)
+    setTimeout(() => {
+      setExit(false),
+      onClose()
+    }, 500)
+  }
 
   const handleApply = () => {
     localStorage.setItem('user_category', JSON.stringify(userCategories))
-    onClose();
+    handleClose()
   };
 
   useEffect(() => {
@@ -41,79 +61,47 @@ function CategorySelector({ isOpen, onClose }) {
 
   return (
     isOpen && (
-      <motion.div
-        className="modal-overlay"
-        initial={{ y: "100%" }}
-        animate={{ y: 0 }}
-        exit={{ y: "100%" }}
-        style={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          width: "92%",
-          backgroundColor: "#ffffff",
-          boxShadow: "0px -2px 10px rgba(0,0,0,0.2)",
-          borderTopLeftRadius: "16px",
-          borderTopRightRadius: "16px",
-          padding: "16px",
-        }}
-      >
-        <h2>Choose Categories</h2>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-          {categories.map((category) => (
-            <button
-              key={category.category_id}
-              onClick={() => toggleCategory(category)}
-              style={{
-                width: "80px",
-                height: "80px",
-                borderRadius: "12px",
-                border: "none",
-                backgroundColor: userCategories.some((userCategory) => userCategory.category_id === category.category_id )
-                  ? "#4CAF50"
-                  : "#f0f0f0",
-                color: userCategories.some((userCategory) => userCategory.category_id === category.category_id ) ? "#fff" : "#000",
-                fontWeight: "bold",
-                cursor: "pointer",
-              }}
-            >
-              {category.category}
+      <div>
+        <div className={`overlay ${exit ? "exit" : ""}`} onClick={() => handleClose()}></div>
+        <motion.div
+          className="modal-overlay"
+          initial={{ y: "100%" }}
+          animate={{ y: exit ? "100%" : 0 }}
+          exit={{ y: "100%" }}
+          transition={{
+            duration : 0.65,
+            ease : "easeInOut"
+          }}
+        >
+          <h3>보고 싶은 카테고리를 선택해주세요</h3>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", justifyContent: "space-evenly"}}>
+            <button className="long-button all-select-button" onClick={
+              () => setUserCategories(categories)}>
+              전부 볼래요!
             </button>
-          ))}
-        </div>
-        <button
-          onClick={handleApply}
-          style={{
-            marginTop: "16px",
-            padding: "10px 16px",
-            borderRadius: "8px",
-            border: "none",
-            backgroundColor: "#007BFF",
-            color: "#fff",
-            fontWeight: "bold",
-            cursor: "pointer",
-            width: "100%",
-          }}
-        >
-          Apply
-        </button>
-        <button
-          onClick={onClose}
-          style={{
-            marginTop: "8px",
-            padding: "10px 16px",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-            backgroundColor: "#fff",
-            color: "#000",
-            fontWeight: "bold",
-            cursor: "pointer",
-            width: "100%",
-          }}
-        >
-          Cancel
-        </button>
-      </motion.div>
+            {categories.map((category) => (
+              <button className={`categoryButton ${userCategories.some((userCategory) => userCategory.category_id === category.category_id) ? "" : "selected"}`}
+                key={category.category_id}
+                onClick={() => toggleCategory(category)}
+              >
+                {category.category}
+              </button>
+            ))}
+          </div>
+          <button
+            className="long-button apply-button"
+            onClick={handleApply}
+          >
+            저장
+          </button>
+          <button
+            className="long-button cancle-button"
+            onClick={handleClose}
+          >
+            취소
+          </button>
+        </motion.div>
+      </div>
     )
   );
 }

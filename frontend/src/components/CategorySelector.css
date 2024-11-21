@@ -1,0 +1,82 @@
+.categoryButton {
+  width: 40vw;
+  height: 60px;
+  border-radius: 12px;
+  border: none;
+  background-color: #4CAF50;
+  color : #fcfcfc;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.categoryButton.selected {
+  background-color: #5e5e5e;
+}
+
+.long-button {
+  margin-top: 16px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  width: 85vw;
+}
+
+.all-select-button {
+  background-color: #4CAF50;
+}
+
+.apply-button {
+  background-color: #388E3C;
+}
+
+.cancle-button {
+  margin-top: 8px;
+  background-color: #CCCCCC;
+  color: #000;
+}
+
+.modal-overlay {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 92vw;
+  background-color: #333333;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  padding: 16px;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  animation: darken 0.8s ease forwards;
+}
+
+.overlay.exit {
+  animation: disappear 0.8s ease forwards;
+}
+
+@keyframes darken {
+  from {
+    background-color: rgba(0, 0, 0, 0); /* 기본값 */
+  }
+  to {
+    background-color: rgba(0, 0, 0, 0.5); /* 어두운 배경 */
+  }
+}
+
+@keyframes disappear {
+  from {
+    background-color: rgba(0, 0, 0, 0.5); /* 기본값 */
+  }
+  to {
+    background-color: rgba(0, 0, 0, 0); /* 어두운 배경 */
+  }
+}
