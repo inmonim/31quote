@@ -1,6 +1,5 @@
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
   font-weight: 400;
   justify-self: center;
 
@@ -8,7 +7,6 @@
   padding: 5vw;
   width: 100vw; /* 디바이스 너비 */
   height: 95vh; /* 디바이스 높이 */
-  overflow: hidden; /* 스크롤 제거 */
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);

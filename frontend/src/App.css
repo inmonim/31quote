@@ -3,7 +3,6 @@
   padding: 0;
   width: 100vw; /* 디바이스 너비 */
   height: var(--vh, 100vh); /* 디바이스 높이 */
-  overflow: hidden; /* 스크롤 제거 */
   justify-items: center;
   
   max-width: 1280px;
@@ -32,4 +31,13 @@
 
 .read-the-docs {
   color: #888;
+}
+
+button {
+  overflow: hidden;
+  cursor: pointer;
+}
+
+button:focus {
+  outline : none;
 }

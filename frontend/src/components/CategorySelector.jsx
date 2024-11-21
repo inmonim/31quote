@@ -19,6 +19,7 @@ function CategorySelector({ isOpen, onClose }) {
       if (prev.some((prevCategory) => prevCategory.category_id === category.category_id)) {
         // 요소가 1개일 경우 제거를 막음
         if (prev.length === 1) {
+          alert("1개 이상의 카테고리를 선택해야해요!")
           return prev; // 아무 것도 하지 않음
         }
         // 요소가 2개 이상인 경우 제거
@@ -80,7 +81,9 @@ function CategorySelector({ isOpen, onClose }) {
               전부 볼래요!
             </button>
             {categories.map((category) => (
-              <button className={`categoryButton ${userCategories.some((userCategory) => userCategory.category_id === category.category_id) ? "" : "selected"}`}
+              <button className={`categoryButton ${
+                userCategories.some((userCategory) => userCategory.category_id === category.category_id
+              ) ? "selected" : ""}`}
                 key={category.category_id}
                 onClick={() => toggleCategory(category)}
               >
