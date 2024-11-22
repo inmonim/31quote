@@ -56,8 +56,12 @@ export function Home() {
   const handleSwipe = (event, info) => {
     event.preventDefault();
     // 오른쪽으로 스와이프 하면 options 화면으로 이동
+    console.log(info.offset.y)
     if (info.offset.x < -100) {
       navigate("/options");
+    } else if (info.offset.y > 15) {
+      
+      window.location.reload()
     }
   };
 

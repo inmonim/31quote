@@ -1,6 +1,8 @@
-import { React } from "react"
+import { React, useState } from "react"
 
 import { motion } from "framer-motion"
+
+import "./QuoteExample.css"
 
 function QuoteExample( {textAlign} ) {
 
@@ -22,18 +24,19 @@ function QuoteExample( {textAlign} ) {
   return (
     <div>
       <motion.div style={{ textAlign: textAlign}}
+        key={textAlign}
         className="animated-text-container"
         variants={containerVariants} // 부모 애니메이션
         initial="hidden"            // 초기 상태
         animate="visible"           // 최종 상태
       >
         <div className="example-quote">
-          <motion.p className="ko-sen" variants={itemVariants}>사랑은 그 자체로 충분하다.</motion.p>
-          <motion.p className="en-sen" variants={itemVariants}>Love is sufficient unto love.</motion.p>
-          <motion.p className="ko-speak"variants={itemVariants}>칼릴 지브란</motion.p>
-          <motion.p className="org-speak" variants={itemVariants}>Gibran Kahlil Gibran</motion.p>
-          <motion.p className="ref" variants={itemVariants}>&lt;예언자&gt;중에서</motion.p>
-          <motion.p className="category" variants={itemVariants}>사랑에 관하여</motion.p>
+          <motion.p className="quote ko-sen" variants={itemVariants}>사랑은 그 자체로 충분하다.</motion.p>
+          <motion.p className="quote en-sen" variants={itemVariants}>Love is sufficient unto love.</motion.p>
+          <motion.p className="quote ko-speak"variants={itemVariants}>칼릴 지브란</motion.p>
+          <motion.p className="quote org-speak" variants={itemVariants}>Gibran Kahlil Gibran</motion.p>
+          <motion.p className="quote ref" variants={itemVariants}>&lt;예언자&gt;중에서</motion.p>
+          <motion.p className="quote category" variants={itemVariants}>사랑에 관하여</motion.p>
         </div>
       </motion.div>
     </div>
