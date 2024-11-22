@@ -46,11 +46,11 @@ function Options() {
       }}
     >
       <h2>설정을 바꿀게요</h2>
-      <div className="options-container">
+      <motion.div className="options-container" layout>
         <h3>예시예요!</h3>
         <hr></hr>
         <QuoteExample textAlign={textAlign} />
-      </div>
+      </motion.div>
       
       <div className="options-container">
         <h2>글을 어느 쪽에 붙일까요?</h2>

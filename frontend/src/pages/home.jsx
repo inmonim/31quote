@@ -12,8 +12,17 @@ export function Home() {
 
   const navigate = useNavigate();
 
+  const defaultQuoteViewSet =
+    {"한글 명언" : true,
+    "영어 번역" : true,
+    "말한 사람" : true,
+    "말한 사람 본명" : true,
+    "출처" : true,
+    "카테고리" : true
+  }
+
   const [ quoteViewSetting ] = useState(
-    JSON.parse(localStorage.getItem("quote_view_setting"))
+    JSON.parse(localStorage.getItem("quote_view_setting")) || defaultQuoteViewSet
   );
 
   // quote data
@@ -60,12 +69,10 @@ export function Home() {
   const handleSwipe = (event, info) => {
     event.preventDefault();
     // 오른쪽으로 스와이프 하면 options 화면으로 이동
-    console.log(info.offset.y)
     if (info.offset.x < -100) {
       navigate("/options");
     // 상단 스와이프로 새로고침
-    } else if (info.offset.y > 15) {
-      
+    } else if (info.offset.y > 12) {
       window.location.reload()
     }
   };
@@ -112,14 +119,12 @@ export function Home() {
           initial="hidden"            // 초기 상태
           animate="visible"           // 최종 상태
         >
-          <div>
-          <motion.h2 variants={itemVariants} hidden={!quoteViewSetting["한글 명언"]}>{koSentence}</motion.h2>
-          <motion.h3 variants={itemVariants} hidden={!quoteViewSetting["영어 번역"]}>{enSentence}</motion.h3>
-          <motion.h3 variants={itemVariants} hidden={!quoteViewSetting["말한 사람"]}>{speakerKoName}</motion.h3>
-          <motion.p variants={itemVariants} hidden={!quoteViewSetting["말한 사람 본명"]}>{speakerOrgName}</motion.p>
+          {quoteViewSetting["한글 명언"] && <motion.h2 variants={itemVariants}>{koSentence}</motion.h2>}
+          {quoteViewSetting["영어 번역"] && <motion.h3 variants={itemVariants}>{enSentence}</motion.h3>}
+          {quoteViewSetting["말한 사람"] && <motion.h3 variants={itemVariants}>{speakerKoName}</motion.h3>}
+          {quoteViewSetting["말한 사람 본명"] && <motion.p variants={itemVariants}>{speakerOrgName}</motion.p>}
           {/* <p>&lt;{reference}&gt;중에서</p> */}
-          <motion.p variants={itemVariants} hidden={!quoteViewSetting["카테고리"]}>{category}에 관하여</motion.p>
-          </div>
+          {quoteViewSetting["카테고리"] && <motion.p variants={itemVariants}>{category}에 관하여</motion.p>}
       </motion.div>
     </motion.div>
   )

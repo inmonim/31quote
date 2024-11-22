@@ -76,7 +76,6 @@ function CategorySelector({ isOpen, onClose }) {
           className="modal-overlay"
           initial={{ y: "100%" }}
           animate={{ y: exit ? "100%" : 0 }}
-          exit={{ y: "100%" }}
           transition={{
             duration : 0.65,
             ease : "easeInOut"

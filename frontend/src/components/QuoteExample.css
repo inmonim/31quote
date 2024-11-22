@@ -34,8 +34,14 @@
   font-weight: bold;
   cursor: pointer;
   width: 60vw;
+  transition: all 0.3s ease-in-out;
 }
 
 .setting-button.selected {
   background-color: #4CAF50;
+  transition: all 0.3s ease-in-out;
+}
+
+.setting-button.private.selected {
+  background-color: #295a2a;
 }
