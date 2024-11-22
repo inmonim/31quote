@@ -12,6 +12,10 @@ export function Home() {
 
   const navigate = useNavigate();
 
+  const [ quoteViewSetting ] = useState(
+    JSON.parse(localStorage.getItem("quote_view_setting"))
+  );
+
   // quote data
   const [quoteId, setQuoteId] = useState('');
   const [koSentence, setKoSentence] = useState('');
@@ -59,6 +63,7 @@ export function Home() {
     console.log(info.offset.y)
     if (info.offset.x < -100) {
       navigate("/options");
+    // 상단 스와이프로 새로고침
     } else if (info.offset.y > 15) {
       
       window.location.reload()
@@ -108,12 +113,12 @@ export function Home() {
           animate="visible"           // 최종 상태
         >
           <div>
-          <motion.h2 variants={itemVariants}>{koSentence}</motion.h2>
-          <motion.h3 variants={itemVariants}>{enSentence}</motion.h3>
-          <motion.h3 variants={itemVariants}>{speakerKoName}</motion.h3>
-          <motion.p variants={itemVariants}>{speakerOrgName}</motion.p>
+          <motion.h2 variants={itemVariants} hidden={!quoteViewSetting["한글 명언"]}>{koSentence}</motion.h2>
+          <motion.h3 variants={itemVariants} hidden={!quoteViewSetting["영어 번역"]}>{enSentence}</motion.h3>
+          <motion.h3 variants={itemVariants} hidden={!quoteViewSetting["말한 사람"]}>{speakerKoName}</motion.h3>
+          <motion.p variants={itemVariants} hidden={!quoteViewSetting["말한 사람 본명"]}>{speakerOrgName}</motion.p>
           {/* <p>&lt;{reference}&gt;중에서</p> */}
-          <motion.p variants={itemVariants}>{category}에 관하여</motion.p>
+          <motion.p variants={itemVariants} hidden={!quoteViewSetting["카테고리"]}>{category}에 관하여</motion.p>
           </div>
       </motion.div>
     </motion.div>

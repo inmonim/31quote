@@ -1,4 +1,4 @@
-.categoryButton {
+.category-button {
   width: 40vw;
   height: 60px;
   border-radius: 12px;
@@ -10,7 +10,7 @@
   transition: all 0.3s ease-in-out;
 }
 
-.categoryButton.selected {
+.category-button.selected {
   background-color: #4CAF50;
 }
 

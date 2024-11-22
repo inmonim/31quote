@@ -50,11 +50,19 @@ function CategorySelector({ isOpen, onClose }) {
         const data = response.data
         setCategories(data)
         setUserCategories(() => {
-          try {
-            return JSON.parse(localStorage.getItem("user_category"))
-          } catch {
-            return data
+          let tmpUserCategory = []
+          if (localStorage.getItem("user_category")) {
+            try {
+              tmpUserCategory = JSON.parse(localStorage.getItem("user_category"))
+            } catch {
+              tmpUserCategory = data
+            }
+          } else {
+            tmpUserCategory = data
           }
+          localStorage.setItem("user_category", JSON.stringify(tmpUserCategory))
+          console.log(data)
+          return tmpUserCategory
         })
       })
     }
@@ -81,7 +89,7 @@ function CategorySelector({ isOpen, onClose }) {
               전부 볼래요!
             </button>
             {categories.map((category) => (
-              <button className={`categoryButton ${
+              <button className={`category-button ${
                 userCategories.some((userCategory) => userCategory.category_id === category.category_id
               ) ? "selected" : ""}`}
                 key={category.category_id}
