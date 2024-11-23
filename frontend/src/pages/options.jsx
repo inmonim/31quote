@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { AlignOptions } from "@/components/AlignOption"
@@ -52,22 +52,24 @@ function Options() {
         <QuoteExample textAlign={textAlign} />
       </motion.div>
       
-      <div className="options-container">
+      <motion.div className="options-container" layout>
         <h2>글을 어느 쪽에 붙일까요?</h2>
         <AlignOptions onAlignmentChange={handleAlignmentChange} />
-      </div>
+      </motion.div>
 
-      <div className="options-container">
+      <motion.div className="options-container" layout>
         <h2>명언 종류를 바꿀래요</h2>
         <button style={{ fontWeight: "bold" }}  onClick={() => setCategorySelectorOpen(true)}>
           받아볼 명언 종류 바꾸기
         </button>
         <CategorySelector isOpen={categorySelectorOpen}
           onClose={() => setCategorySelectorOpen(false)} />
-      </div>
+      </motion.div>
 
-      <h1>Options</h1>
-      <p>Swipe left to go back</p>
+      <motion.div>
+        <h2>글꼴을 바꿀래요</h2>
+        
+      </motion.div>
     </motion.div>
   );
 }

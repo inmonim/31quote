@@ -80,7 +80,7 @@ function QuoteExample( {textAlign} ) {
   },[quoteViewSetting])
 
   return (
-    <div>
+    <motion.div layout>
       <motion.div className="example-quote"
         key={textAlign}
         style={{ textAlign: textAlign}}
@@ -138,41 +138,69 @@ function QuoteExample( {textAlign} ) {
         </AnimatePresence>
       </motion.div>
 
-      <hr></hr>
+      <motion.hr layout ></motion.hr>
 
-      <motion.div>
+      <motion.div layout>
         <motion.button 
-          style={{margin:10}}
-          onClick={() => setIsSettingOpen((prev) => prev ? false : true)}
+          style={{ margin: 10 }}
+          onClick={() => setIsSettingOpen((prev) => !prev)}
+          layout
         >
-          {isSettingOpen ? "지금이 좋아요!" : "표시될 항목을 바꾸고 싶어요!"}
+          <AnimatePresence mode="wait">
+            {isSettingOpen ? (
+              <motion.span
+                key="open-text"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.3 }}
+                layout
+              >
+                지금이 좋아요!
+              </motion.span>
+            ) : (
+              <motion.span
+                key="close-text"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.3 }}
+                layout
+              >
+                표시될 항목을 바꾸고 싶어요!
+              </motion.span>
+            )}
+          </AnimatePresence>
         </motion.button>
-      
+        
         <AnimatePresence>
           { isSettingOpen &&
           <motion.div
+            // key="setting-button-container"
             className="setting-button-container"
             style={{justifyContent:"center"}}
             variants={settingContainerVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
+            layout
           >
             {Object.entries(quoteViewSetting).map(([key, val]) => (
-              <button
+              <motion.button
                 className={`setting-button ${["한글 명언", "영어 번역"].some((item) => item == key) ? "private": ""} ${val ? "selected" : ""}`}
                 key={key}
                 onClick={() => toggleQuoteViewSetting(key)}
+                layout
               >
                 {key}
-              </button>
+              </motion.button>
             ))}
           </motion.div>
           }
         </AnimatePresence>
 
       </motion.div>
-    </div>
+    </motion.div>
   )
 }
 
